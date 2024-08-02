@@ -1,0 +1,28 @@
+Table PostReaction {
+  id int [not null, pk, increment]
+  post_id uuid [not null, unique, ref: > Post.id]
+  user_id uuid [not null, unique, ref: > User.id]
+  comment_id uuid [null, unique, ref: > User.id]
+  created_at timestamp
+}
+
+
+Table Notification {
+  id uuid [not null, pk, unique]
+  created_at timestamp [not null]
+  is_read bool [not null]
+  user_id uuid [not null, ref: > User.id]
+  message_id uuid [null, ref: > Message.id]
+  comment_id uuid [null, ref: > PostComment.id]
+  reaction_id uuid [null, ref: > PostReaction.id]
+  follower_id uuid [null, ref: > Followers.id]
+
+}
+
+Table Message {
+  id uuid [not null, pk, unique]
+  message text
+  sender_id uuid [not null, ref: > User.id]
+  receiver_id uuid [not null, ref: > User.id]
+  created_at timestamp
+}
