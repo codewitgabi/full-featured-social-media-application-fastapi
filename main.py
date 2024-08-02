@@ -4,12 +4,13 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import uvicorn
+from starlette.exceptions import HTTPException as StarletteHttpException
 
 load_dotenv()
 
 # custom imports
 
-from api.v1.responses.error_responses import ValidationErrorResponse
+from api.v1.responses.error_responses import ValidationErrorResponse, ErrorResponse
 
 
 app: FastAPI = FastAPI(
@@ -41,6 +42,18 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=response.model_dump()
     )
+
+
+@app.exception_handler(StarletteHttpException)
+async def http_exception_handler(request: Request, exc: StarletteHttpException):
+    """
+    :param request: HTTP request object
+    :param exc: HTTP exception
+    :returns JSONResponse
+    """
+
+    response = ErrorResponse(status_code=exc.status_code, message=exc.detail)
+    return JSONResponse(status_code=exc.status_code, content=response.model_dump())
 
 
 @app.get("/")
