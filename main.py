@@ -12,6 +12,7 @@ load_dotenv()
 # custom imports
 
 from api.v1.responses.error_responses import ValidationErrorResponse, ErrorResponse
+from api.v1.responses.success_response import success_response
 
 
 app: FastAPI = FastAPI(
@@ -70,11 +71,7 @@ async def http_exception_handler(request: Request, exc: StarletteHttpException):
 
 @app.get("/")
 async def index():
-    return {
-        "status": status.HTTP_200_OK,
-        "message": "Welcome to fastapi-social-media-api",
-        "data": {},
-    }
+    return success_response(message="Welcome to fastapi-social-media-api")
 
 
 # start server
