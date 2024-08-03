@@ -1,5 +1,10 @@
+Enum message_status {
+  read
+  unread
+}
+
 Table PostReaction {
-  id int [not null, pk, increment]
+  id uuid [not null, pk, increment]
   post_id uuid [not null, unique, ref: > Post.id]
   user_id uuid [not null, unique, ref: > User.id]
   comment_id uuid [null, unique, ref: > User.id]
@@ -10,19 +15,100 @@ Table PostReaction {
 Table Notification {
   id uuid [not null, pk, unique]
   created_at timestamp [not null]
-  is_read bool [not null]
+  status message_status [null, default: "unread"]
   user_id uuid [not null, ref: > User.id]
-  message_id uuid [null, ref: > Message.id]
-  comment_id uuid [null, ref: > PostComment.id]
-  reaction_id uuid [null, ref: > PostReaction.id]
-  follower_id uuid [null, ref: > Followers.id]
-
+  message text [not null]
 }
 
 Table Message {
   id uuid [not null, pk, unique]
-  message text
+  message text [not null]
   sender_id uuid [not null, ref: > User.id]
   receiver_id uuid [not null, ref: > User.id]
   created_at timestamp
+}
+
+Project SocialMedia {
+  database_type: "postgresql"
+  author: "Gabriel Michael Ojomakpene (codewitgabi)"
+  email: "codewitgabi222@gmail.com"
+  contact: "+2349020617734"
+  portfolio: "https:codewitgabi.vercel.app"
+}
+
+// enums
+
+Enum roles {
+  user
+  admin
+}
+
+// user
+
+Table User {
+  id uuid [not null, pk, unique]
+  username char [not null]
+  email char [not null, unique]
+  password text [not null]
+  role roles [null, default: "user"]
+  bio text [null]
+  contact_info text [null]
+  social_links char[] [null]
+  followers User[] [ref: <> User.id]
+  followings User[] [ref: <> User.id]
+  last_login datetime [null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
+}
+
+// profile picture
+
+Table ProfilePicture {
+  id uuid [not null, pk, unique]
+  user_id uuid [not null, ref: > User.id]
+  image url [not null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
+}
+
+// profile picture
+
+Table CoverPhoto {
+  id uuid [not null, pk]
+  user_id uuid [not null, ref: > User.id]
+  image url [not null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
+}
+
+// post
+
+Table Post {
+  id uuid [not null, pk, unique]
+  user_id uuid [not null, ref: > User.id]
+  content text [null]
+  image url [null]
+  video url [null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
+}
+
+// post comments
+
+Table PostComment {
+  id uuid [not null, pk, unique]
+  post_id uuid [not null, ref: > Post.id]
+  comment text
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
+}
+
+// notification settings 
+
+Table NotificationSetting {
+  id uuid [not null, pk, unique]
+  user_id uuid [not null, ref: - User.id]
+  enable bool [not null, default: false]
+  keywords tinytext[] [note: "Keywords to notify a user about when used within the application"]
+  created_at datetime [not null, default: `now()`]
 }
