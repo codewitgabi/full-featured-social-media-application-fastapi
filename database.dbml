@@ -1,33 +1,3 @@
-Enum message_status {
-  read
-  unread
-}
-
-Table PostReaction {
-  id uuid [not null, pk, increment]
-  post_id uuid [not null, unique, ref: > Post.id]
-  user_id uuid [not null, unique, ref: > User.id]
-  comment_id uuid [null, unique, ref: > User.id]
-  created_at timestamp
-}
-
-
-Table Notification {
-  id uuid [not null, pk, unique]
-  created_at timestamp [not null]
-  status message_status [null, default: "unread"]
-  user_id uuid [not null, ref: > User.id]
-  message text [not null]
-}
-
-Table Message {
-  id uuid [not null, pk, unique]
-  message text [not null]
-  sender_id uuid [not null, ref: > User.id]
-  receiver_id uuid [not null, ref: > User.id]
-  created_at timestamp
-}
-
 Project SocialMedia {
   database_type: "postgresql"
   author: "Gabriel Michael Ojomakpene (codewitgabi)"
@@ -41,6 +11,11 @@ Project SocialMedia {
 Enum roles {
   user
   admin
+}
+
+Enum message_status {
+  read
+  unread
 }
 
 // user
@@ -103,6 +78,17 @@ Table PostComment {
   updated_at datetime [not null, default: `now()`]
 }
 
+// notification
+
+
+Table Notification {
+  id uuid [not null, pk, unique]
+  created_at timestamp [not null]
+  status message_status [null, default: "unread"]
+  user_id uuid [not null, ref: > User.id]
+  message text [not null]
+}
+
 // notification settings 
 
 Table NotificationSetting {
@@ -111,4 +97,44 @@ Table NotificationSetting {
   enable bool [not null, default: false]
   keywords tinytext[] [note: "Keywords to notify a user about when used within the application"]
   created_at datetime [not null, default: `now()`]
+}
+
+
+Table Message {
+  id uuid [not null, pk, unique]
+  message text [not null]
+  sender_id uuid [not null, ref: > User.id]
+  receiver_id uuid [not null, ref: > User.id]
+  created_at timestamp
+}
+
+Table PostReaction {
+  id uuid [not null, pk, increment]
+  post_id uuid [not null, unique, ref: > Post.id]
+  user_id uuid [not null, unique, ref: > User.id]
+  comment_id uuid [null, unique, ref: > User.id]
+  created_at timestamp
+}
+
+// access tokens
+
+Table AccessToken {
+  id uuid [not null, pk, unique]
+  token char [not null, unique]
+  user_id uuid [not null, ref: > User.id]
+  expiry_time datetime [not null]
+  created_at datetime [not null, default: `now()`]
+}
+
+// blacklist tokens
+
+Table TokenBlacklist {
+  id uuid [not null, pk, unique]
+  access_token char [not null, unique]
+}
+
+Table Hashtag {
+  id uuid [not null, pk, unique]
+  tag char [not null, unique]
+  usage int [not null, default: 1, note: "updated based on the number of times it is used"]
 }
