@@ -1,5 +1,5 @@
 <div align="center">
-    <h4>Full featured social media application -  FastAPI</h4>
+    <h3>Full featured social media application -  FastAPI</h3>
 </div>
 
 A complex project that can leverage your existing backend skills while challenging you to learn and implement FastAPI concepts. Here’s a breakdown of the features to be implemented:
