@@ -1,3 +1,33 @@
+Enum message_status {
+  read
+  unread
+}
+
+Table PostReaction {
+  id uuid [not null, pk, increment]
+  post_id uuid [not null, unique, ref: > Post.id]
+  user_id uuid [not null, unique, ref: > User.id]
+  comment_id uuid [null, unique, ref: > User.id]
+  created_at timestamp
+}
+
+
+Table Notification {
+  id uuid [not null, pk, unique]
+  created_at timestamp [not null]
+  status message_status [null, default: "unread"]
+  user_id uuid [not null, ref: > User.id]
+  message text [not null]
+}
+
+Table Message {
+  id uuid [not null, pk, unique]
+  message text [not null]
+  sender_id uuid [not null, ref: > User.id]
+  receiver_id uuid [not null, ref: > User.id]
+  created_at timestamp
+}
+
 Project SocialMedia {
   database_type: "postgresql"
   author: "Gabriel Michael Ojomakpene (codewitgabi)"
