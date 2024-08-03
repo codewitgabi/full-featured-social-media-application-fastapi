@@ -1,0 +1,64 @@
+Project SocialMedia {
+  database_type: "postgresql"
+  author: "Gabriel Michael Ojomakpene (codewitgabi)"
+  email: "codewitgabi222@gmail.com"
+  contact: "+2349020617734"
+  portfolio: "https:codewitgabi.vercel.app"
+}
+
+// enums
+
+Enum roles {
+  user
+  superadmin
+  staff
+}
+
+// user
+
+Table User {
+  id uuid [not null, pk, unique]
+  username char [not null]
+  email char [not null, unique]
+  password text [not null]
+  role roles [null, default: "user"]
+  bio text
+  contact_info text
+  social_links char[]
+  followers User[] [ref: > User.id]
+  followings User[] [ref: > User.id]
+}
+
+// profile picture
+
+Table ProfilePicture {
+  id uuid [not null, pk, unique]
+  user_id uuid [not null, ref: > User.id]
+  image url [not null]
+}
+
+// profile picture
+
+Table CoverPhoto {
+  id uuid [not null, pk]
+  user_id uuid [not null, ref: > User.id]
+  image url [not null]
+}
+
+// post
+
+Table Post {
+  id uuid [not null, pk, unique]
+  user_id uuid [not null, ref: > User.id]
+  content text [null]
+  image url [null]
+}
+
+// post comments
+
+Table PostComment {
+  id uuid [not null, pk, unique]
+  post_id uuid [not null, ref: > Post.id]
+  comment text
+  created_at datetime
+}
