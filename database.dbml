@@ -10,8 +10,7 @@ Project SocialMedia {
 
 Enum roles {
   user
-  superadmin
-  staff
+  admin
 }
 
 // user
@@ -22,11 +21,14 @@ Table User {
   email char [not null, unique]
   password text [not null]
   role roles [null, default: "user"]
-  bio text
-  contact_info text
-  social_links char[]
-  followers User[] [ref: > User.id]
-  followings User[] [ref: > User.id]
+  bio text [null]
+  contact_info text [null]
+  social_links char[] [null]
+  followers User[] [ref: <> User.id]
+  followings User[] [ref: <> User.id]
+  last_login datetime [null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
 }
 
 // profile picture
@@ -35,6 +37,8 @@ Table ProfilePicture {
   id uuid [not null, pk, unique]
   user_id uuid [not null, ref: > User.id]
   image url [not null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
 }
 
 // profile picture
@@ -43,6 +47,8 @@ Table CoverPhoto {
   id uuid [not null, pk]
   user_id uuid [not null, ref: > User.id]
   image url [not null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
 }
 
 // post
@@ -52,6 +58,9 @@ Table Post {
   user_id uuid [not null, ref: > User.id]
   content text [null]
   image url [null]
+  video url [null]
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
 }
 
 // post comments
@@ -60,5 +69,16 @@ Table PostComment {
   id uuid [not null, pk, unique]
   post_id uuid [not null, ref: > Post.id]
   comment text
-  created_at datetime
+  created_at datetime [not null, default: `now()`]
+  updated_at datetime [not null, default: `now()`]
+}
+
+// notification settings 
+
+Table NotificationSetting {
+  id uuid [not null, pk, unique]
+  user_id uuid [not null, ref: - User.id]
+  enable bool [not null, default: false]
+  keywords tinytext[] [note: "Keywords to notify a user about when used within the application"]
+  created_at datetime [not null, default: `now()`]
 }

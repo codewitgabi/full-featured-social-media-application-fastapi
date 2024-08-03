@@ -4,6 +4,10 @@
 
 A complex project that can leverage your existing backend skills while challenging you to learn and implement FastAPI concepts. Here’s a breakdown of the features to be implemented:
 
+#### Database Design
+
+This project models and schema strickly follows what is on the [database design file](https://dbdiagram.io/d/full-featured-social-media-app-66a43a2d8b4bb5230e7b6ae7)
+
 #### Key Features
 
 - **User Authentication**:
@@ -78,6 +82,7 @@ A complex project that can leverage your existing backend skills while challengi
   - Deploy the application on a cloud provider (AWS, GCP, Azure) or any.
 
 - **Security**:
+
   - Implement best security practices (CORS, CSRF protection, input validation).
   - Regular security audits and penetration testing.
 
