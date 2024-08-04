@@ -19,13 +19,14 @@ jobs:
     env:
       DEBUG: ${{ secrets.DEBUG }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     services:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: "username"
-          POSTGRES_PASSWORD: "password"
+          POSTGRES_USER: "postgres"
+          POSTGRES_PASSWORD: "postgres"
           POSTGRES_DB: "test"
         ports:
           - 5432:5432
