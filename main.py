@@ -1,11 +1,13 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from starlette.exceptions import HTTPException as StarletteHttpException
+
+from api.v1.utils.database import Base, engine
 
 load_dotenv()
 
@@ -14,6 +16,10 @@ load_dotenv()
 from api.v1.responses.error_responses import ValidationErrorResponse, ErrorResponse
 from api.v1.responses.success_response import success_response
 
+
+# create database tables
+
+Base.metadata.create_all(bind=engine)
 
 app: FastAPI = FastAPI(
     debug=os.environ.get("DEBUG") != "False",
