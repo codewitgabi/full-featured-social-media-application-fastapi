@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 from alembic import context
 from api.v1.utils.database import Base
+from api.v1.models import *
 
 load_dotenv()
 
