@@ -12,9 +12,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from api.v1.models.abstract_base import AbstractBaseModel
-import api.v1.models.cover_photo
-import api.v1.models.post
 from api.v1.utils.database import Base
+import api
 
 
 # role enum
@@ -60,6 +59,9 @@ class User(AbstractBaseModel):
     )
     posts: Mapped[List["api.v1.models.post.Post"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
+    )
+    access_tokens: Mapped[List["api.v1.models.access_token.AccessToken"]] = (
+        relationship(back_populates="user", cascade="all, delete-orphan")
     )
 
     def __str__(self) -> str:
