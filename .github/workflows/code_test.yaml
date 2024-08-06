@@ -21,7 +21,7 @@ jobs:
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/test
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     services:
       postgres:
@@ -30,6 +30,12 @@ jobs:
           POSTGRES_USER: "postgres"
           POSTGRES_PASSWORD: "postgres"
           POSTGRES_DB: "test"
+          POSTGRES_HOST: localhost
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 5432:5432
 
