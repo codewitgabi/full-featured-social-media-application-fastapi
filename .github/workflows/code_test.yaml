@@ -19,6 +19,8 @@ jobs:
     env:
       DEBUG: ${{ secrets.DEBUG }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/test
 
     services:
