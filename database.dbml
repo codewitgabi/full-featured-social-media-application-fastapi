@@ -123,14 +123,8 @@ Table AccessToken {
   token char [not null, unique]
   user_id uuid [not null, ref: > User.id]
   expiry_time datetime [not null]
+  blacklisted bool [not null, default: false]
   created_at datetime [not null, default: `now()`]
-}
-
-// blacklist tokens
-
-Table TokenBlacklist {
-  id uuid [not null, pk, unique]
-  access_token char [not null, unique]
 }
 
 Table Hashtag {
