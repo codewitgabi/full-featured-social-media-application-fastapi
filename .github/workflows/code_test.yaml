@@ -55,4 +55,4 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest pytest-cov
-          pytest
+          pytest --disable-warnings -vv
