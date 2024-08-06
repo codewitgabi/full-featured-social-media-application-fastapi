@@ -6,6 +6,7 @@ sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 )
 
+from fastapi import HTTPException, status
 import pytest
 from uuid import uuid4
 from main import app
@@ -42,4 +43,16 @@ def override_create():
         }
 
         mock_create.return_value = user
+        yield mock_create
+
+
+@pytest.fixture
+def mock_user_exists():
+    with patch(
+        "api.v1.services.user.UserService.create_user", autospec=True
+    ) as mock_create:
+        mock_create.side_effect = HTTPException(
+            status.HTTP_400_BAD_REQUEST, "User with email already exists"
+        )
+
         yield mock_create

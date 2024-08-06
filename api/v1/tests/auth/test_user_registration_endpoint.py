@@ -37,3 +37,39 @@ def test_register_user_success(
             "password": "12345",
         },
     }
+
+
+def test_register_validation_error(
+    mock_db_session: Session, mock_user_service: UserService, override_create: None
+):
+    data = {"username": "testUser", "email": "testEmail@gmail.com"}
+
+    response = client.post("/api/v1/auth/register", json=data)
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "status_code": 422,
+        "message": "Validation error",
+        "errors": [{"field": "password", "message": "Field required"}],
+    }
+
+
+def test_user_already_exist(
+    mock_db_session: Session,
+    mock_user_service: UserService,
+    override_create: None,
+    mock_user_exists,
+):
+    data = {
+        "username": "testUser",
+        "email": "testEmail@gmail.com",
+        "password": "12345",
+    }
+
+    response = client.post("/api/v1/auth/register", json=data)
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "status_code": 400,
+        "message": "User with email already exists",
+    }
