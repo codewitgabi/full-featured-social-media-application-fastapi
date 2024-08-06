@@ -24,7 +24,7 @@ Base.metadata.create_all(bind=engine)
 
 app: FastAPI = FastAPI(
     debug=os.environ.get("DEBUG") != "False",
-    docs_url=None,
+    docs_url="/docs",
     redoc_url=None,
     title="Fastapi Social Media API",
 )
