@@ -168,5 +168,3 @@ cython_debug/
 #.idea/
 
 test_case1.py
-
-alembic/versions/**
