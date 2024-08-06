@@ -19,7 +19,7 @@ jobs:
     env:
       DEBUG: ${{ secrets.DEBUG }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/test
 
     services:
       postgres:
