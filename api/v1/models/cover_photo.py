@@ -2,9 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import DateTime, ForeignKey, String, func
 from api.v1.models.abstract_base import AbstractBaseModel
-
-# from api.v1.models.user import User
-import api.v1.models.user
+import api
 
 
 class CoverPhoto(AbstractBaseModel):
