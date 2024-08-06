@@ -8,6 +8,7 @@ import uvicorn
 from starlette.exceptions import HTTPException as StarletteHttpException
 
 from api.v1.utils.database import Base, engine
+from api.v1.routes import version_one
 
 load_dotenv()
 
@@ -27,6 +28,10 @@ app: FastAPI = FastAPI(
     redoc_url=None,
     title="Fastapi Social Media API",
 )
+
+# routes
+
+app.include_router(version_one)  # api version one
 
 # cors handler
 

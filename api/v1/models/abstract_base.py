@@ -9,7 +9,7 @@ class AbstractBaseModel(Base):
     __abstract__ = True
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, index=True, default=str(uuid4())
+        String, primary_key=True, index=True, default=lambda: str(uuid4())
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
