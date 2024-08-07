@@ -57,6 +57,9 @@ class User(AbstractBaseModel):
     cover_photos: Mapped[list["api.v1.models.cover_photo.CoverPhoto"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    profile_pictures: Mapped[list["api.v1.models.cover_photo.ProfilePicture"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
     posts: Mapped[List["api.v1.models.post.Post"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
