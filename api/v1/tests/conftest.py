@@ -56,3 +56,40 @@ def mock_user_exists():
         )
 
         yield mock_create
+
+
+@pytest.fixture
+def override_handle_login():
+    with patch("api.v1.services.user.UserService.handle_login") as handle_login:
+        response = {
+            "access_token": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.KkiNWdzcAgD_0PF169pvBausbptBe1mSQcTorMEqciA",
+            "user": {
+                "id": "341df7fe-3d16-4c43-a0eb-5f7e2940d012",
+                "username": "test",
+                "email": "test@example.com",
+                "role": "user",
+            },
+        }
+
+        handle_login.return_value = response
+        yield handle_login
+
+
+@pytest.fixture
+def mock_invalid_account_effect():
+    with patch("api.v1.services.user.UserService.handle_login") as handle_login:
+        handle_login.side_effect = HTTPException(
+            400, detail="No account associated with provided email"
+        )
+
+        yield handle_login
+
+
+@pytest.fixture
+def mock_incorrect_password():
+    with patch(
+        "api.v1.services.user.UserService.verify_password"
+    ) as incorrect_password:
+        incorrect_password.side_effect = HTTPException(400, "Incorrect password")
+
+        yield incorrect_password

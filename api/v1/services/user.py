@@ -52,7 +52,7 @@ class UserService:
             username=user.username,
             email=user.email,
             access_token=token,
-            expiry=expiry
+            expiry=expiry,
         )
 
         return response

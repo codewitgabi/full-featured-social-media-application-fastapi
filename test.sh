@@ -1,1 +1,1 @@
-sh -c "pytest --disable-warnings -vv" >> test.log
+sh -c "pytest --disable-warnings -vv" > test.log
