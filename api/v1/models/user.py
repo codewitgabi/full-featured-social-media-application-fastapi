@@ -13,7 +13,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from api.v1.models.abstract_base import AbstractBaseModel
 from api.v1.utils.database import Base
-import api
 
 
 # role enum
@@ -39,7 +38,7 @@ class User(AbstractBaseModel):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(1024), nullable=False)
     bio: Mapped[Optional[str]] = mapped_column(String(1024))
-    contact_into: Mapped[Optional[str]] = mapped_column(String(15))
+    contact_info: Mapped[Optional[str]] = mapped_column(String(15))
     social_links: Mapped[List] = mapped_column(String(255), nullable=True)
     followers = relationship(
         "User",
@@ -54,14 +53,12 @@ class User(AbstractBaseModel):
     )
 
     # relationships
-    cover_photos: Mapped[list["api.v1.models.cover_photo.CoverPhoto"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+    cover_photos = relationship(
+        "CoverPhoto", back_populates="user", cascade="all, delete-orphan"
     )
-    posts: Mapped[List["api.v1.models.post.Post"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
-    access_tokens: Mapped[List["api.v1.models.access_token.AccessToken"]] = (
-        relationship(back_populates="user", cascade="all, delete-orphan")
+    posts = relationship("Post", back_populates="user", cascade="all, delete-orphan")
+    access_tokens = relationship(
+        "AccessToken", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __str__(self) -> str:

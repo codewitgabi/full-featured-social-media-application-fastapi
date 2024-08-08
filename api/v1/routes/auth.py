@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
+from fastapi.encoders import jsonable_encoder
 from api.v1.responses.success_response import success_response
-from api.v1.schemas.user import UserCreate, UserCreateResponse
+from api.v1.schemas.user import UserCreate, UserCreateResponse, UserLogin
 from api.v1.services.user import user_service
 from sqlalchemy.orm import Session
 
@@ -22,4 +23,13 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         status_code=status.HTTP_201_CREATED,
         message="User created successfully",
         data=new_user,
+    )
+
+
+@auth.post("/login", status_code=status.HTTP_200_OK)
+async def login(data: UserLogin, db: Session = Depends(get_db)):
+    data = user_service.handle_login(db, email=data.email, password=data.password)
+
+    return success_response(
+        status_code=status.HTTP_200_OK, message="User login successful", data=jsonable_encoder(data)
     )
