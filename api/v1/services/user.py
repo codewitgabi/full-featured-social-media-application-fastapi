@@ -4,6 +4,7 @@ from typing import Annotated
 from dotenv import load_dotenv
 
 from api.v1.models.access_token import AccessToken
+from api.v1.utils.dependencies import get_db
 
 load_dotenv()
 from fastapi import Depends, HTTPException, status
@@ -19,7 +20,7 @@ from api.v1.schemas.user import (
     UserLoginSchema,
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
@@ -147,12 +148,14 @@ class UserService:
         return response
 
     def get_current_user(
-        self, db: Session, token: Annotated[str, Depends(oauth2_scheme)]
+        self, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
     ):
         credential_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
         )
+
 
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -165,12 +168,31 @@ class UserService:
         except jwt.InvalidTokenError:
             raise credential_exception
 
+        # check if token is blacklisted
+
+        access_token = db.query(AccessToken).filter(AccessToken.token == token).first()
+
+        if access_token.blacklisted:
+            raise credential_exception
+
         user = self.get_user_by_email(email, db)
 
         if not user:
             raise credential_exception
 
         return user
+
+    def blacklist_token(self, db: Session, user: User) -> None:
+        # get user access token
+
+        access_token = (
+            db.query(AccessToken).filter(AccessToken.user_id == user.id).first()
+        )
+
+        access_token.blacklisted = True
+
+        db.commit()
+        db.refresh(access_token)
 
 
 user_service = UserService()
