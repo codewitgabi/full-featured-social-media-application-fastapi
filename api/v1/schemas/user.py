@@ -48,3 +48,10 @@ class LoginResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class User(BaseModel):
+    id: str
+    
+    class Config:
+        from_attributes = True
