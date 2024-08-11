@@ -12,8 +12,8 @@ This project models and schema strickly follows what is on the [database design 
 
 - **User Authentication**:
 
-  - [ ] User registration and login
-  - [ ] Password hashing and JWT token-based authentication.
+  - [x] User registration, login and logout
+  - [x] Password hashing and JWT token-based authentication.
   - [ ] Role-based access control.
 
 - **User profiles**:
