@@ -1,8 +1,8 @@
 """create tables
 
-Revision ID: dc6bacb29779
+Revision ID: 0dd396a329ff
 Revises: 
-Create Date: 2024-08-06 00:14:57.274729
+Create Date: 2024-08-07 10:50:25.095755
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'dc6bacb29779'
+revision: str = '0dd396a329ff'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password', sa.String(length=1024), nullable=False),
     sa.Column('bio', sa.String(length=1024), nullable=True),
-    sa.Column('contact_into', sa.String(length=15), nullable=True),
+    sa.Column('contact_info', sa.String(length=15), nullable=True),
     sa.Column('social_links', sa.String(length=255), nullable=True),
     sa.Column('role', sa.Enum('user', 'admin', name='roleenum'), nullable=False),
     sa.Column('last_login', sa.DateTime(timezone=True), nullable=True),
@@ -36,6 +36,17 @@ def upgrade() -> None:
     sa.UniqueConstraint('email')
     )
     op.create_index(op.f('ix_user_id'), 'user', ['id'], unique=False)
+    op.create_table('access_token',
+    sa.Column('user_id', sa.String(), nullable=False),
+    sa.Column('token', sa.String(length=500), nullable=False),
+    sa.Column('expiry_time', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('blacklisted', sa.Boolean(), server_default='false', nullable=False),
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_access_token_id'), 'access_token', ['id'], unique=False)
     op.create_table('cover_photo',
     sa.Column('user_id', sa.String(), nullable=False),
     sa.Column('image', sa.String(length=1024), nullable=False),
@@ -75,6 +86,8 @@ def downgrade() -> None:
     op.drop_table('post')
     op.drop_index(op.f('ix_cover_photo_id'), table_name='cover_photo')
     op.drop_table('cover_photo')
+    op.drop_index(op.f('ix_access_token_id'), table_name='access_token')
+    op.drop_table('access_token')
     op.drop_index(op.f('ix_user_id'), table_name='user')
     op.drop_table('user')
     # ### end Alembic commands ###
