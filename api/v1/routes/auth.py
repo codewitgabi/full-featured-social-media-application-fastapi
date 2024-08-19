@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.encoders import jsonable_encoder
 from api.v1.responses.success_response import success_response
-from api.v1.schemas.user import UserCreate, UserCreateResponse, UserLogin, User
+from api.v1.schemas.user import UserCreate, UserCreateResponse, UserLogin
+from api.v1.models.user import User
 from api.v1.services.user import user_service
 from sqlalchemy.orm import Session
 
