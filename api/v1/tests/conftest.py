@@ -12,6 +12,8 @@ from uuid import uuid4
 from main import app
 from unittest.mock import patch, MagicMock
 from api.v1.utils.dependencies import get_db
+from api.v1.services.user import user_service
+from api.v1.models.user import User
 
 mock_id = str(uuid4())
 
@@ -93,3 +95,44 @@ def mock_incorrect_password():
         incorrect_password.side_effect = HTTPException(400, "Incorrect password")
 
         yield incorrect_password
+
+
+@pytest.fixture
+def mock_access_token():
+    with patch(
+        "api.v1.services.user.UserService.generate_access_token"
+    ) as access_token:
+        access_token.return_value = "access_token"
+
+        yield access_token
+
+
+def override_deps():
+    return User(
+        id="5d35b5b3-4eb7-4ad4-8082-b9af0de42c44",
+        username="test-user",
+        email="test-user@example.com",
+        role="user",
+    )
+
+
+@pytest.fixture
+def override_get_current_user():
+    with patch(
+        "api.v1.services.user.UserService.get_current_user", autospec=True
+    ) as current_user:
+        current_user.return_value = User(
+            id="5d35b5b3-4eb7-4ad4-8082-b9af0de42c44",
+        )
+        app.dependency_overrides[user_service.get_current_user] = current_user
+        yield current_user
+
+    app.dependency_overrides = {}
+
+
+@pytest.fixture
+def override_blacklist_token():
+    with patch(
+        "api.v1.services.user.user_service.blacklist_token"
+    ) as blacklist_token:
+        yield blacklist_token
