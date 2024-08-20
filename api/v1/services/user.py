@@ -284,7 +284,9 @@ class UserService:
 
         # return user detail
 
-        return self.get_user_detail(db=db, user_id=user_id)
+        return jsonable_encoder(
+            self.get_user_detail(db=db, user_id=user_id), exclude={"password"}
+        )
 
 
 user_service = UserService()
