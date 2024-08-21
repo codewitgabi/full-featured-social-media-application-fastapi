@@ -39,7 +39,6 @@ class User(AbstractBaseModel):
     password: Mapped[str] = mapped_column(String(1024), nullable=False)
     bio: Mapped[Optional[str]] = mapped_column(String(1024))
     contact_info: Mapped[Optional[str]] = mapped_column(String(15))
-    social_links: Mapped[List] = mapped_column(String(255), nullable=True)
     followers = relationship(
         "User",
         secondary=followers_table,
@@ -53,6 +52,9 @@ class User(AbstractBaseModel):
     )
 
     # relationships
+    social_links = relationship(
+        "SocialLink", back_populates="user", cascade="all, delete-orphan"
+    )
     cover_photos = relationship(
         "CoverPhoto", back_populates="user", cascade="all, delete-orphan"
     )
