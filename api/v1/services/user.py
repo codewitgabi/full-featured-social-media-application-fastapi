@@ -29,7 +29,7 @@ from api.v1.utils.storage import upload
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.environ.get("SECRET_KEY")
-ALGORITHM = os.environ.get("ALGORITHM")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 
