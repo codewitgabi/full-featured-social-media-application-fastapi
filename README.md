@@ -18,9 +18,9 @@ This project models and schema strickly follows what is on the [database design 
 
 - **User profiles**:
 
-  - [ ] Create, update, and delete user profiles.
-  - [ ] Profile pictures and cover photos.
-  - [ ] Bio, contact information, and social links.
+  - [x] Create, update, and delete user profiles.
+  - [x] Profile pictures and cover photos.
+  - [x] Bio, contact information, and social links.
 
 - **Posts and Feeds**:
 
