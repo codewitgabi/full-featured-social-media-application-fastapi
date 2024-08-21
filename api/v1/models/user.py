@@ -65,6 +65,9 @@ class User(AbstractBaseModel):
     access_tokens = relationship(
         "AccessToken", back_populates="user", cascade="all, delete-orphan"
     )
+    notifications = relationship(
+        "Notification", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __str__(self) -> str:
         return self.username
