@@ -97,16 +97,6 @@ def mock_incorrect_password():
         yield incorrect_password
 
 
-@pytest.fixture
-def mock_access_token():
-    with patch(
-        "api.v1.services.user.UserService.generate_access_token"
-    ) as access_token:
-        access_token.return_value = "access_token"
-
-        yield access_token
-
-
 def override_deps():
     return User(
         id="5d35b5b3-4eb7-4ad4-8082-b9af0de42c44",
@@ -115,24 +105,20 @@ def override_deps():
         role="user",
     )
 
-
 @pytest.fixture
-def override_get_current_user():
-    with patch(
-        "api.v1.services.user.UserService.get_current_user", autospec=True
-    ) as current_user:
-        current_user.return_value = User(
-            id="5d35b5b3-4eb7-4ad4-8082-b9af0de42c44",
-        )
-        app.dependency_overrides[user_service.get_current_user] = current_user
-        yield current_user
-
-    app.dependency_overrides = {}
+def test_user():
+    return User(
+        id="12345",
+        email="test@example.com",
+        password=user_service.hash_password("@Password123"),
+    )
 
 
 @pytest.fixture
-def override_blacklist_token():
-    with patch(
-        "api.v1.services.user.user_service.blacklist_token"
-    ) as blacklist_token:
-        yield blacklist_token
+def access_token(test_user, mock_db_session):
+    return user_service.generate_access_token(mock_db_session, test_user)
+
+
+@pytest.fixture
+def current_user(test_user):
+    app.dependency_overrides[user_service.get_current_user] = lambda: test_user

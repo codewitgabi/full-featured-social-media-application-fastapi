@@ -1,8 +1,6 @@
 from datetime import datetime
-from typing import List, Literal
-from pydantic import BaseModel, Field, EmailStr
-
-from api.v1.models.user import User
+from typing import List, Literal, Optional
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 
 
 class UserBase(BaseModel):
@@ -26,6 +24,7 @@ class UserCreateResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    
 
 
 class UserLoginSchema(BaseModel):
@@ -41,17 +40,19 @@ class UserLoginSchema(BaseModel):
     updated_at: datetime
 
 
+class UserUpdateSchema(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    bio: Optional[str] = None
+    contact_info: Optional[str] = None
+    social_links: Optional[List[str]] = None
+    profile_picture: Optional[str] = None
+    cover_photo: Optional[str] = None
+
+
 class LoginResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     access_token: str
     expiry: datetime
     user: UserLoginSchema
-
-    class Config:
-        from_attributes = True
-
-
-class User(BaseModel):
-    id: str
-    
-    class Config:
-        from_attributes = True
