@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from api.v1.models.user import User
@@ -35,3 +35,18 @@ async def get_user_profile(
         message="User detail fetched successfully",
         data=jsonable_encoder(data, exclude=["password"]),
     )
+
+
+@users.delete(
+    "/{id}",
+    summary="Delete user profile/account",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_user_profile(
+    id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
+    user_service.delete_user_profile(db=db, user=user, user_id=id)
+
+    return success_response(status_code=204, message="User deleted successfully")

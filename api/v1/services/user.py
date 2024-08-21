@@ -174,7 +174,7 @@ class UserService:
 
         access_token = db.query(AccessToken).filter(AccessToken.token == token).first()
 
-        if access_token.blacklisted:
+        if access_token and access_token.blacklisted:
             raise credential_exception
 
         user = self.get_user_by_email(email, db)
@@ -287,6 +287,18 @@ class UserService:
         return jsonable_encoder(
             self.get_user_detail(db=db, user_id=user_id), exclude={"password"}
         )
+    
+    def delete_user_profile(self, db: Session, user: User, user_id: str):
+        # check if user is the currently logged in user
+
+        if user.id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You do not have permission to delete this user",
+            )
+
+        db.delete(user)
+        db.commit()
 
 
 user_service = UserService()
