@@ -58,6 +58,20 @@ def mock_delete_user_effect():
     with patch(
         "api.v1.services.user.user_service.delete_user_profile"
     ) as delete_user_profile:
-        delete_user_profile.side_effect = HTTPException(403, "You do not have permission to delete this user")
+        delete_user_profile.side_effect = HTTPException(
+            403, "You do not have permission to delete this user"
+        )
 
         yield delete_user_profile
+
+
+@pytest.fixture
+def mock_get_users():
+    with patch("api.v1.services.user.user_service.fetch_all") as fetch_users:
+        fetch_users.return_value = [
+            {"id": 1, "username": "codewitgabi"},
+            {"id": 2, "username": "test"},
+            {"id": 3, "username": "doe"},
+        ]
+
+        yield fetch_users
