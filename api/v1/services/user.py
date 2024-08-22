@@ -14,6 +14,7 @@ load_dotenv()
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import or_, text
 from passlib.context import CryptContext
 import jwt
 from api.v1.models.user import User
@@ -328,6 +329,25 @@ class UserService:
 
         db.delete(user)
         db.commit()
+
+    def fetch_all(self, db: Session, search: str = ""):
+        query = (
+            db.query(User)
+            .options(joinedload(User.profile_pictures), joinedload(User.social_links))
+            .order_by(text("RANDOM()"))
+        )
+
+        if search:
+            query = query.filter(
+                or_(
+                    User.username.icontains(f"%{search}%"),
+                    User.email.icontains(f"%{search}%"),
+                )
+            )
+
+        users = query.all()
+
+        return jsonable_encoder(users, exclude={"password"})
 
 
 user_service = UserService()

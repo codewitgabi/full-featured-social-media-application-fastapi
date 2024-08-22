@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, status
+from typing import Annotated
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from api.v1.models.user import User
@@ -50,3 +51,14 @@ async def delete_user_profile(
     user_service.delete_user_profile(db=db, user=user, user_id=id)
 
     return success_response(status_code=204, message="User deleted successfully")
+
+
+@users.get("", summary="Get list of users")
+async def get_users(search: str = "", db: Session = Depends(get_db)):
+    users = user_service.fetch_all(db=db, search=search)
+
+    return success_response(
+        status_code=status.HTTP_200_OK,
+        message="User list fetched successfully",
+        data=users,
+    )
