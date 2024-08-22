@@ -25,3 +25,20 @@ async def create_post(
         message="Post created successfully",
         data=new_post,
     )
+
+
+@posts.delete(
+    "/{id}",
+    summary="Delete a post",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_post(
+    id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(user_service.get_current_user),
+):
+    post_service.delete(db=db, user=user, post_id=id)
+
+    return success_response(
+        status_code=status.HTTP_204_NO_CONTENT, message="Post deleted successfully"
+    )

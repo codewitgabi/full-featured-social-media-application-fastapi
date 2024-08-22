@@ -6,14 +6,10 @@ sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 )
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 import pytest
 from uuid import uuid4
-from main import app
-from unittest.mock import patch, MagicMock
-from api.v1.utils.dependencies import get_db
-from api.v1.services.user import user_service
-from api.v1.models.user import User
+from unittest.mock import patch
 
 mock_id = str(uuid4())
 
@@ -32,3 +28,11 @@ def mock_create_post():
         }
 
         yield create_post
+
+
+@pytest.fixture
+def mock_delete_post_side_effect():
+    with patch("api.v1.services.post.post_service.delete") as create_post_side_effect:
+        create_post_side_effect.side_effect = HTTPException(404, "Post not found")
+
+        yield create_post_side_effect

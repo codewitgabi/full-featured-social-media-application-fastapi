@@ -24,5 +24,20 @@ class PostService:
 
         return jsonable_encoder(post)
 
+    def delete(self, db: Session, user: User, post_id: str):
+        # get post matching post_id and user
+
+        post = (
+            db.query(Post).filter(Post.user_id == user.id, Post.id == post_id).first()
+        )
+
+        if not post:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
+            )
+
+        db.delete(post)
+        db.commit()
+
 
 post_service = PostService()
