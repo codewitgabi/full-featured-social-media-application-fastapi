@@ -169,4 +169,5 @@ cython_debug/
 
 test_case1.py
 alembic/versions/*
+!alembic/versions/.gitkeep
 bash.exe.stackdump
