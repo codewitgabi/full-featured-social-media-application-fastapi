@@ -17,14 +17,9 @@ from sqlalchemy.orm import Session, joinedload
 from passlib.context import CryptContext
 import jwt
 from api.v1.models.user import User
-from api.v1.schemas.user import (
-    LoginResponse,
-    UserCreate,
-    UserCreateResponse,
-    UserLoginSchema,
-    UserUpdateSchema,
-)
+from api.v1.schemas.user import UserCreate, UserUpdateSchema
 from api.v1.utils.storage import upload
+from api.v1.models.notification import Notification
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -49,6 +44,15 @@ class UserService:
         db.add(user)
         db.commit()
         db.refresh(user)
+
+        # create notification
+
+        notification = Notification(
+            user_id=user.id, message="Account created successfully"
+        )
+
+        db.add(notification)
+        db.commit()
 
         # generate access token
 
@@ -136,6 +140,13 @@ class UserService:
         db.commit()
         db.refresh(user)
 
+        # create notification
+
+        notification = Notification(user_id=user.id, message="Account Login successful")
+
+        db.add(notification)
+        db.commit()
+
         user = jsonable_encoder(
             self.get_user_detail(db=db, user_id=user.id), exclude={"password"}
         )
@@ -195,6 +206,15 @@ class UserService:
 
         db.commit()
         db.refresh(access_token)
+
+        # create notification
+
+        notification = Notification(
+            user_id=user.id, message="Account logout successful"
+        )
+
+        db.add(notification)
+        db.commit()
 
     def get_user_detail(self, db: Session, user_id: str):
         query = (
@@ -282,12 +302,21 @@ class UserService:
         db.commit()
         db.refresh(user)
 
+        # create notification
+
+        notification = Notification(
+            user_id=user.id, message="Account updated successfully"
+        )
+
+        db.add(notification)
+        db.commit()
+
         # return user detail
 
         return jsonable_encoder(
             self.get_user_detail(db=db, user_id=user_id), exclude={"password"}
         )
-    
+
     def delete_user_profile(self, db: Session, user: User, user_id: str):
         # check if user is the currently logged in user
 
