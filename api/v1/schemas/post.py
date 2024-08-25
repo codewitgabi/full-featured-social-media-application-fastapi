@@ -7,3 +7,11 @@ class CreatePostSchema(BaseModel):
     content: str | None = None
     image: str | None = None
     video: str | None = None
+
+
+class UpdatePostSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    content: str | None = None
+    image: str | None = None
+    video: str | None = None
