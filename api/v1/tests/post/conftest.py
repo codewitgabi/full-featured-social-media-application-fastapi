@@ -36,3 +36,35 @@ def mock_delete_post_side_effect():
         create_post_side_effect.side_effect = HTTPException(404, "Post not found")
 
         yield create_post_side_effect
+
+
+@pytest.fixture
+def mock_update_post():
+    with patch("api.v1.services.post.post_service.update") as update_post:
+        update_post.return_value = {
+            "user_id": "02bb30ec-c793-463f-a2ea-d83edd156628",
+            "video": None,
+            "id": "ac3d6659-8f67-4a67-b690-9f77fab7e6e3",
+            "image": None,
+            "content": "Update post content",
+        }
+
+        yield update_post
+
+
+@pytest.fixture
+def mock_update_post_no_body_side_effect():
+    with patch("api.v1.services.post.post_service.update") as update_post_side_effect:
+        update_post_side_effect.side_effect = HTTPException(
+            400, "Please provide one of content, image or video"
+        )
+
+        yield update_post_side_effect
+
+
+@pytest.fixture
+def mock_update_post_not_found_side_effect():
+    with patch("api.v1.services.post.post_service.update") as update_post_side_effect:
+        update_post_side_effect.side_effect = HTTPException(404, "Post not found")
+
+        yield update_post_side_effect
