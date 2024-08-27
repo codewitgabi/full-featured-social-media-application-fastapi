@@ -31,7 +31,7 @@ This project models and schema strickly follows what is on the [database design 
 
 - **Posts and Feeds**:
 
-  - [ ] Create, edit, and delete posts (text, images, videos).
+  - [x] Create, edit, and delete posts (text, images, videos).
   - [ ] Like, comment, and share functionality.
   - [ ] Real-time feed updates using WebSocket
 

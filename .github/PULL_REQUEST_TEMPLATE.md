@@ -1,4 +1,4 @@
-## Related Issue (Link to issue ticket)
+#### Related Issue (Link to issue ticket)
 ---
 
 <!--- This project only accepts pull requests related to open issues -->
