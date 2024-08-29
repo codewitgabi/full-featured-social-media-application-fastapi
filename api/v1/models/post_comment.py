@@ -8,6 +8,8 @@ from api.v1.models.abstract_base import AbstractBaseModel
 class PostComment(AbstractBaseModel):
     __tablename__ = "post_comment"
 
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
+    user = relationship("User", back_populates="comments")
     post_id: Mapped[str] = mapped_column(ForeignKey("post.id"))
     post = relationship("Post", back_populates="comments")
     comment: Mapped[str] = mapped_column(Text, nullable=False)
