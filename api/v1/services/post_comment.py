@@ -32,7 +32,7 @@ class CommentService:
         if not post:
             raise self.post_not_found
 
-        comment = PostComment(post_id = post.id, **schema_dict)
+        comment = PostComment(user_id = user.id, post_id = post.id, **schema_dict)
 
         db.add(comment)
         db.commit()
@@ -62,7 +62,11 @@ class CommentService:
         if not post:
             raise self.post_not_found
 
-        comment = db.query(PostComment).filter(PostComment.id == comment_id, PostComment.post_id == post.id).first()
+        comment = db.query(PostComment).filter(
+                PostComment.id == comment_id, 
+                PostComment.post_id == post.id, 
+                PostComment.user_id == user.id
+                ).first()
 
         if not comment:
             raise self.comment_not_found
@@ -80,12 +84,16 @@ class CommentService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="The comment cannot be an empty field")
 
-        post = db.query(Post).filter(Post.user_id == user.id, Post.id == post_id).first()
+        post = db.query(Post).filter(Post.id == post_id).first()
 
         if not post:
             raise self.post_not_found
 
-        comment = db.query(PostComment).filter(PostComment.post_id == post.id, PostComment.id == comment_id)
+        comment = db.query(PostComment).filter(
+                PostComment.post_id == post.id, 
+                PostComment.id == comment_id,
+                PostComment.user_id == user.id
+                ).first()
 
         if not comment:
             raise self.comment_not_found
