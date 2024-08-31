@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Literal, Optional
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from .profile_picture import ProfilePictureResponse
 
 
 class UserBase(BaseModel):
@@ -24,7 +25,15 @@ class UserCreateResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
-    
+
+
+# Used for comment to provide extra details about user
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    username: str
+    profile_picture: ProfilePictureResponse
 
 
 class UserLoginSchema(BaseModel):

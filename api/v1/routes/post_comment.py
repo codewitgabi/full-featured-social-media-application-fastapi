@@ -7,10 +7,12 @@ from api.v1.services.user import user_service
 from api.v1.services.post import post_service
 from api.v1.models.user import User
 from api.v1.models.post import Post
+from api.v1.responses.success_response import success_response
 
-comments = APIRouter(prefix="/comments", tags=["comment"])
 
-@comments.post("/{post_id}")
+comments = APIRouter(prefix="/posts", tags=["comment"])
+
+@comments.post("/{post_id}/comments")
 async def create_comment(
         post_id:str,
         comment: CreateCommentSchema,

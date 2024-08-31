@@ -61,7 +61,10 @@ class User(AbstractBaseModel):
     profile_pictures = relationship(
         "ProfilePicture", back_populates="user", cascade="all, delete-orphan"
     )
-    posts = relationship("Post", back_populates="user", cascade="all, delete-orphan")
+    posts = relationship("Post", back_populates="user", cascade="all, delete-orphan"
+    )
+    comments = relationship("PostComment", back_populates="user", cascade="all, delete-orphan"
+    )
     access_tokens = relationship(
         "AccessToken", back_populates="user", cascade="all, delete-orphan"
     )

@@ -1,10 +1,11 @@
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from api.v1.schemas.post_comment import CreateCommentSchema, UpdateCommentSchema
+from api.v1.schemas.post_comment import CreateCommentSchema, UpdateCommentSchema, CommentResponse
 from api.v1.models.post_comment import PostComment
 from api.v1.models.post import Post
 from api.v1.models.user import User
+
 
 class CommentService:
     # class attributes
@@ -21,7 +22,7 @@ class CommentService:
     def create(self, db: Session, user: User, post_id:str, schema: CreateCommentSchema):
         schema_dict = schema.model_dump()
 
-        if schema_dict.comment is None:
+        if all(value is None for value in schema_dict.values()):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="The comment cannot be an empty field")
@@ -34,11 +35,17 @@ class CommentService:
 
         comment = PostComment(user_id = user.id, post_id = post.id, **schema_dict)
 
+        response_user = jsonable_encoder(user)
+
         db.add(comment)
         db.commit()
         db.refresh(comment)
 
-        return jsonable_encoder(comment)
+        encoded = jsonable_encoder(comment)
+        encoded["user"] = response_user
+        del encoded["user_id"]
+
+        return encoded
 
 
     def get_comments(self, db: Session, user: User, post_id: str):
