@@ -15,7 +15,7 @@ class UpdateCommentSchema(BaseModel):
 
 
 class CommentResponse(BaseModel):
-    id: int
+    id: str
     comment: str
     created_at: datetime
     updated_at: datetime

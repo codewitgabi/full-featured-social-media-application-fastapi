@@ -45,7 +45,7 @@ class CommentService:
         encoded["user"] = response_user
         del encoded["user_id"]
 
-        return encoded
+        return CommentResponse(**encoded)
 
 
     def get_comments(self, db: Session, user: User, post_id: str):

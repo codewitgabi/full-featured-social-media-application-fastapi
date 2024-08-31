@@ -33,7 +33,7 @@ class UserResponse(BaseModel):
 
     id: str
     username: str
-    profile_picture: ProfilePictureResponse
+    profile_pictures: ProfilePictureResponse | None = None
 
 
 class UserLoginSchema(BaseModel):
