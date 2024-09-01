@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from api.v1.schemas.post_comment import UpdateCommentSchema, CreateCommentSchema, CommentResponse
+from api.v1.schemas.post_comment import CreateCommentSchema, CommentResponse
 from api.v1.services.post_comment import comment_service
 from api.v1.utils.dependencies import get_db
 from api.v1.services.user import user_service

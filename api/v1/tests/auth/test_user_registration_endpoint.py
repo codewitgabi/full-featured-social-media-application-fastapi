@@ -73,3 +73,4 @@ def test_user_already_exist(
         "status_code": 400,
         "message": "User with email already exists",
     }
+

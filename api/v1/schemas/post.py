@@ -16,6 +16,3 @@ class UpdatePostSchema(BaseModel):
     image: str | None = None
     video: str | None = None
 
-
-class PostResponse(BaseModel):
-    pass

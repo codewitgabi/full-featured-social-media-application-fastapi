@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 import os
 from typing import Annotated
 from dotenv import load_dotenv
+from pydantic import ValidationError
 from fastapi.encoders import jsonable_encoder
 
 from api.v1.models.access_token import AccessToken
@@ -37,6 +38,7 @@ class UserService:
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST, "User with email already exists"
             )
+
 
         hashed_password = self.hash_password(user.password)
         user.password = hashed_password

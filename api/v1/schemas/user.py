@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Literal, Optional
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
-from .profile_picture import ProfilePictureResponse
+from pydantic import BaseModel, Field, EmailStr, ConfigDict 
+from api.v1.schemas.profile_picture import ProfilePictureResponse
 
 
 class UserBase(BaseModel):
@@ -17,7 +17,7 @@ class UserCreate(UserBase):
 class UserCreateResponse(BaseModel):
     id: str
     username: str
-    email: str
+    email: EmailStr
     access_token: str
     expiry: datetime
 
