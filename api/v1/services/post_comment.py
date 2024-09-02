@@ -12,28 +12,32 @@ from api.v1.services.user import user_service
 class CommentService:
     # class attributes
     post_not_found = HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
-            detail="Post does not exist")
+        status_code=status.HTTP_404_NOT_FOUND, detail="Post does not exist"
+    )
 
     # end of class attributes
 
     # class methods
-    def create(self, db: Session, user: User, post_id:str, schema: CreateCommentSchema):
+    def create(
+        self, db: Session, user: User, post_id: str, schema: CreateCommentSchema
+    ):
         schema_dict = schema.model_dump()
 
         if all(value is None for value in schema_dict.values()):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="The comment cannot be an empty field")
-        
-        # get the post
-        post = db.query(Post).filter(Post.user_id == user.id, Post.id==post_id).first()
+                detail="The comment cannot be an empty field",
+            )
 
+        # get the post
+        post = (
+            db.query(Post).filter(Post.user_id == user.id, Post.id == post_id).first()
+        )
 
         if not post:
             raise self.post_not_found
 
-        comment = PostComment(user_id = user.id, post_id = post.id, **schema_dict)
+        comment = PostComment(user_id=user.id, post_id=post.id, **schema_dict)
 
         # get user complete details and serialize the user
         comment_owner = user_service.get_user_detail(db=db, user_id=user.id)
@@ -48,7 +52,7 @@ class CommentService:
 
         return CommentResponse(**encoded)
 
-
     # end of class methods
+
 
 comment_service = CommentService()

@@ -39,7 +39,6 @@ class UserService:
                 status.HTTP_400_BAD_REQUEST, "User with email already exists"
             )
 
-
         hashed_password = self.hash_password(user.password)
         user.password = hashed_password
         user = User(**user.model_dump())
