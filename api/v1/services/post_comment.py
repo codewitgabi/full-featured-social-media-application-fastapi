@@ -2,9 +2,11 @@ from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from api.v1.schemas.post_comment import CreateCommentSchema, CommentResponse
+from api.v1.schemas.user import UserResponse
 from api.v1.models.post_comment import PostComment
 from api.v1.models.post import Post
 from api.v1.models.user import User
+from api.v1.services.user import user_service
 
 
 class CommentService:
@@ -27,12 +29,15 @@ class CommentService:
         # get the post
         post = db.query(Post).filter(Post.user_id == user.id, Post.id==post_id).first()
 
+
         if not post:
             raise self.post_not_found
 
         comment = PostComment(user_id = user.id, post_id = post.id, **schema_dict)
 
-        response_user = jsonable_encoder(user)
+        # get user complete details and serialize the user
+        comment_owner = user_service.get_user_detail(db=db, user_id=user.id)
+        response_user = jsonable_encoder(comment_owner)
 
         db.add(comment)
         db.commit()

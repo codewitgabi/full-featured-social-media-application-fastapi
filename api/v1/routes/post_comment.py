@@ -12,19 +12,21 @@ from api.v1.responses.success_response import success_response
 
 comments = APIRouter(prefix="/posts", tags=["comment"])
 
+
 @comments.post("/{post_id}/comments")
 async def create_comment(
-        post_id:str,
-        comment: CreateCommentSchema,
-        db: Session = Depends(get_db),
-        user: User = Depends(user_service.get_current_user)):
+    post_id: str,
+    comment: CreateCommentSchema,
+    db: Session = Depends(get_db),
+    user: User = Depends(user_service.get_current_user),
+):
 
-    new_comment: CommentResponse = comment_service.create(db=db, user=user, post_id=post_id, schema=comment)
-
-    print(new_comment)
+    new_comment: CommentResponse = comment_service.create(
+        db=db, user=user, post_id=post_id, schema=comment
+    )
 
     return success_response(
-            status_code=status.HTTP_201_CREATED,
-            message="Comment successfully created",
-            data=new_comment)
-
+        status_code=status.HTTP_201_CREATED,
+        message="Comment successfully created",
+        data=new_comment,
+    )

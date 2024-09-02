@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from datetime import datetime
 
 
 class ProfilePictureResponse(BaseModel):
@@ -6,3 +7,5 @@ class ProfilePictureResponse(BaseModel):
 
     id: str
     image: str
+    created_at: datetime
+    updated_at: datetime
