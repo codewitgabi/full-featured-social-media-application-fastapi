@@ -18,3 +18,9 @@ class CommentResponse(BaseModel):
     updated_at: datetime
     post_id: str
     user: UserResponse
+
+
+class UpdateCommentSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    comment: str | None = None
