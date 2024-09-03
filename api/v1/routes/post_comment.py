@@ -30,3 +30,23 @@ async def create_comment(
         message="Comment successfully created",
         data=new_comment,
     )
+
+
+@comments.patch("/{post_id}/comments/{comment_id}")
+async def update_comment(
+    post_id: str,
+    comment_id: str,
+    comment: CreateCommentSchema,
+    db: Session = Depends(get_db),
+    user: User = Depends(user_service.get_current_user),
+):
+
+    updated_comment = comment_service.update(
+        db=db, user=user, post_id=post_id, comment_id=comment_id, schema=comment
+    )
+
+    return success_response(
+        status_code=status.HTTP_200_OK,
+        message="Comment updated successfully",
+        data=updated_comment,
+    )
