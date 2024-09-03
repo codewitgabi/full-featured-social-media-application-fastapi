@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Literal, Optional
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, root_validator
+from api.v1.schemas.profile_picture import ProfilePictureResponse
 
 
 class UserBase(BaseModel):
@@ -16,7 +17,7 @@ class UserCreate(UserBase):
 class UserCreateResponse(BaseModel):
     id: str
     username: str
-    email: str
+    email: EmailStr
     access_token: str
     expiry: datetime
 
@@ -24,7 +25,26 @@ class UserCreateResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
-    
+
+
+# Used for comment to provide extra details about user
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    username: str
+    profile_pictures: List[ProfilePictureResponse] = Field(default=None, exclude=True)
+    current_profile_picture: Optional[ProfilePictureResponse] = None
+
+    @root_validator(pre=True)
+    def set_current_profile_picture(cls, values):
+        profile_pictures = values.get("profile_pictures", [])
+        if profile_pictures:
+            latest_profile_picture = max(
+                profile_pictures, key=lambda picture: picture["updated_at"]
+            )
+            values["current_profile_picture"] = latest_profile_picture
+        return values
 
 
 class UserLoginSchema(BaseModel):

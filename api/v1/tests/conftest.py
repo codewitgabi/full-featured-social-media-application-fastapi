@@ -50,9 +50,7 @@ def override_create():
 
 @pytest.fixture
 def mock_user_exists():
-    with patch(
-        "api.v1.services.user.UserService.create_user", autospec=True
-    ) as mock_create:
+    with patch("api.v1.services.user.UserService.create_user") as mock_create:
         mock_create.side_effect = HTTPException(
             status.HTTP_400_BAD_REQUEST, "User with email already exists"
         )
@@ -104,6 +102,7 @@ def override_deps():
         email="test-user@example.com",
         role="user",
     )
+
 
 @pytest.fixture
 def test_user():
