@@ -106,3 +106,14 @@ def mock_update_comment_no_content_side_effect():
         )
 
         yield comment_update_no_content
+
+
+@pytest.fixture
+def mock_delete_comment_comment_not_found_side_effect():
+    with patch(
+        "api.v1.services.post_comment.comment_service.delete"
+    ) as delete_comment_side_effect:
+
+        delete_comment_side_effect.side_effect = HTTPException(404, "comment not found")
+
+        yield delete_comment_side_effect

@@ -108,6 +108,31 @@ class CommentService:
 
         return CommentResponse(**encoded)
 
+    def delete(self, db: Session, user: User, post_id: str, comment_id: str):
+
+        post = (
+            db.query(Post).filter(Post.user_id == user.id, Post.id == post_id).first()
+        )
+
+        if not post:
+            raise self.post_not_found
+
+        comment = (
+            db.query(PostComment)
+            .filter(
+                PostComment.id == comment_id,
+                PostComment.post_id == post.id,
+                PostComment.user_id == user.id,
+            )
+            .first()
+        )
+
+        if not comment:
+            raise self.comment_not_found
+
+        db.delete(comment)
+        db.commit()
+
     # end of class methods
 
 

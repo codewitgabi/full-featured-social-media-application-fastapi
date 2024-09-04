@@ -50,3 +50,18 @@ async def update_comment(
         message="Comment updated successfully",
         data=updated_comment,
     )
+
+
+@comments.delete("/{post_id}/comments/{comment_id}")
+async def delete_comment(
+    post_id: str,
+    comment_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    comment_service.delete(db=db, user=user, post_id=post_id, comment_id=comment_id)
+
+    return success_response(
+        status_code=status.HTTP_204_NO_CONTENT, message="Comment deleted successfully"
+    )
