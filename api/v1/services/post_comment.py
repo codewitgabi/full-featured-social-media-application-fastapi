@@ -133,6 +133,34 @@ class CommentService:
         db.delete(comment)
         db.commit()
 
+
+
+
+    def get_comments(self, db: Session, user: User, post_id: str
+):
+
+        post = db.query(Post).filter(Post.user_id == user.id, Post.id == post_id).first()
+
+        if not post:
+            raise self.post_not_found
+
+        comments = db.query(PostComment).filter(PostComment.post_id == post_id).all()
+
+        response_comments = []
+
+        for comment in comments:
+            owner_details = user_service.get_user_detail(db=db, user_id=comment.user_id)
+            response_user = jsonable_encoder(owner_details)
+            validate_user = UserResponse(**response_user)
+            response_comment = jsonable_encoder(comment)
+
+            response_comment["user"] = validate_user.model_dump()
+
+            response_comments.append(response_comment)
+
+
+        return jsonable_encoder(response_comments)
+
     # end of class methods
 
 

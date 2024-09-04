@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from api.v1.schemas.post_comment import CreateCommentSchema, CommentResponse
+from api.v1.schemas.user import UserResponse
 from api.v1.services.post_comment import comment_service
 from api.v1.utils.dependencies import get_db
 from api.v1.services.user import user_service
@@ -11,6 +12,22 @@ from api.v1.responses.success_response import success_response
 
 
 comments = APIRouter(prefix="/posts", tags=["comment"])
+
+
+@comments.get("/{post_id}/comments")
+async def get_comments(
+    post_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(user_service.get_current_user),
+):
+
+    comments = comment_service.get_comments(db=db, post_id=post_id, user=user)
+
+    return success_response(
+        status_code=status.HTTP_200_OK,
+        message="Comments successfully returned",
+        data=comments,
+    )
 
 
 @comments.post("/{post_id}/comments")
