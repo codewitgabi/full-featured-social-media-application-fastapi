@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import DateTime, ForeignKey, String, func
 from api.v1.models.abstract_base import AbstractBaseModel
-
+from pydantic import UUID4
 
 class Post(AbstractBaseModel):
     __tablename__ = "post"
@@ -24,3 +24,17 @@ class Post(AbstractBaseModel):
 
     def __str__(self) -> str:
         return self.content or self.image or self.video
+
+
+
+class Like(AbstractBaseModel):
+    __tablename__ = "like"
+
+    user_id: Mapped[UUID4] = mapped_column(ForeignKey("user.id"))
+    user = relationship("User", backref="my_likes")
+    post_id: Mapped[UUID4] = mapped_column(ForeignKey("post.id"))
+    post = relationship("Post", backref="likes")
+    liked: Mapped[bool] = mapped_column(default=False)
+
+    def __repr__(self):
+        return self.user

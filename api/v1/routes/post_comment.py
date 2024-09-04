@@ -11,10 +11,10 @@ from api.v1.models.post import Post
 from api.v1.responses.success_response import success_response
 
 
-comments = APIRouter(prefix="/posts", tags=["comment"])
+comments = APIRouter(prefix="/posts/{post_id}", tags=["comment"])
 
 
-@comments.get("/{post_id}/comments")
+@comments.get("/comments")
 async def get_comments(
     post_id: str,
     db: Session = Depends(get_db),
@@ -30,7 +30,7 @@ async def get_comments(
     )
 
 
-@comments.post("/{post_id}/comments")
+@comments.post("/comments")
 async def create_comment(
     post_id: str,
     comment: CreateCommentSchema,
@@ -49,7 +49,7 @@ async def create_comment(
     )
 
 
-@comments.patch("/{post_id}/comments/{comment_id}")
+@comments.patch("/comments/{comment_id}")
 async def update_comment(
     post_id: str,
     comment_id: str,
@@ -69,7 +69,7 @@ async def update_comment(
     )
 
 
-@comments.delete("/{post_id}/comments/{comment_id}")
+@comments.delete("/comments/{comment_id}")
 async def delete_comment(
     post_id: str,
     comment_id: str,

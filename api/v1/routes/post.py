@@ -58,3 +58,30 @@ async def update_post(
         message="Post updated successfully",
         data=updated_post,
     )
+
+@posts.patch("/{id}/like",status_code=status.HTTP_200_OK)
+async def like_post(
+        id: str,
+        db: Session = Depends(get_db),
+        user: User = Depends(user_service.get_current_user)):
+
+    liked_post = post_service.like_post(db=db,user=user,post_id=id)
+
+    return success_response(
+            status_code=status.HTTP_200_OK,
+            message="Post updated successfully",
+            )
+
+@posts.get("/{id}/like", status_code = status.HTTP_200_OK)
+async def get_likes(
+        id: str,
+        db: Session = Depends(get_db),
+        user: User = Depends(user_service.get_current_user)):
+
+    likes = post_service.get_likes(db=db, post_id=id, user=user)
+
+    return success_response(
+            status_code=status.HTTP_200_OK,
+            message="Likes returned successfully",
+            data = likes,)
+
