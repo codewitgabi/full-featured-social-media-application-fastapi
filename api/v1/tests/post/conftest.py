@@ -68,3 +68,23 @@ def mock_update_post_not_found_side_effect():
         update_post_side_effect.side_effect = HTTPException(404, "Post not found")
 
         yield update_post_side_effect
+
+
+@pytest.fixture
+def mock_like_post():
+    with patch("api.v1.services.post.post_service.like_post") as like_post:
+        like_post.return_value = {"message": "post liked successfully"}
+        yield like_post
+
+
+@pytest.fixture
+def mock_get_post_likes():
+    with patch("api.v1.services.post.post_service.get_likes") as post_likes:
+        post_likes.return_value = {
+            "user_id": "xxx",
+            "post_id": "yyy",
+            "liked": "True",
+            "user": {"id": "jjj", "image": "hhh"},
+        }
+
+        yield post_likes

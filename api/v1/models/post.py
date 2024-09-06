@@ -24,3 +24,16 @@ class Post(AbstractBaseModel):
 
     def __str__(self) -> str:
         return self.content or self.image or self.video
+
+
+class Like(AbstractBaseModel):
+    __tablename__ = "like"
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
+    user = relationship("User", backref="my_likes")
+    post_id: Mapped[str] = mapped_column(ForeignKey("post.id"))
+    post = relationship("Post", backref="likes")
+    liked: Mapped[bool] = mapped_column(default=False)
+
+    def __repr__(self):
+        return self.user
