@@ -25,15 +25,15 @@ class PostResponse(CreatePostSchema):
     user_id: UUID4 = Field(exclude=True)
     created_at: datetime
     updated_at: datetime
-    user: UserResponse
+    user: UserResponse = Field(alias="original_post_owner")
 
 
 class LikeResponse(BaseModel):
     model_config = ConfigDict(from_attribute=True)
 
-    id: UUID4
-    post_id: UUID4
-    user_id: UUID4
+    id: str
+    post_id: str
+    user_id: str
     liked: bool
     user: UserResponse = None
 
@@ -47,10 +47,10 @@ class RepostResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
-    post_id: UUID4 = Field(exclude=True)
-    user_id: UUID4 = Field(exclude=True)
+    post_id: str = Field(exclude=True)
+    user_id: str = Field(exclude=True)
     content: str | None = None
     created_at: datetime
     updated_at: datetime
-    user: UserResponse
-    post: PostResponse
+    user: UserResponse = Field(alias="repost_owner")
+    post: PostResponse = Field(alias="original_post")
