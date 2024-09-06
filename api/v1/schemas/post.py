@@ -25,7 +25,7 @@ class PostResponse(CreatePostSchema):
     user_id: UUID4 = Field(exclude=True)
     created_at: datetime
     updated_at: datetime
-    user: UserResponse = Field(alias="original_post_owner")
+    user: UserResponse = Field(serialization_alias="original_post_owner")
 
 
 class LikeResponse(BaseModel):
@@ -52,5 +52,5 @@ class RepostResponse(BaseModel):
     content: str | None = None
     created_at: datetime
     updated_at: datetime
-    user: UserResponse = Field(alias="repost_owner")
-    post: PostResponse = Field(alias="original_post")
+    user: UserResponse = Field(serialization_alias="repost_owner")
+    post: PostResponse = Field(serialization_alias="original_post")
