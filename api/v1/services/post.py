@@ -70,20 +70,24 @@ class PostService:
 
         return jsonable_encoder(post)
 
-
-
     def like_post(self, db: Session, user: User, post_id: str):
 
         # get the post
-        post = db.query(Post).filter(Post.id == post_id, Post.user_id == user.id).first()
+        post = (
+            db.query(Post).filter(Post.id == post_id, Post.user_id == user.id).first()
+        )
 
         if not post:
             raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    details="Page not found")
+                status_code=status.HTTP_404_NOT_FOUND, details="Page not found"
+            )
 
         # Check if user has already liked the post
-        like = db.query(Like).filter(Like.post_id == post_id, Like.user_id == user.id).first()
+        like = (
+            db.query(Like)
+            .filter(Like.post_id == post_id, Like.user_id == user.id)
+            .first()
+        )
 
         if like:
             db.delete(like)
@@ -94,16 +98,16 @@ class PostService:
             db.add(like)
             db.commit()
 
-
-
     def get_likes(self, db: Session, post_id: str, user: User):
 
-        post = db.query(Post).filter(Post.id == post_id, Post.user_id == user.id).first()
+        post = (
+            db.query(Post).filter(Post.id == post_id, Post.user_id == user.id).first()
+        )
 
         if not post:
             raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    details="Page not found")
+                status_code=status.HTTP_404_NOT_FOUND, details="Page not found"
+            )
 
         likes = db.query(Like).filter(Like.post_id == post_id).all()
 
@@ -120,7 +124,6 @@ class PostService:
             like_response["user"] = validate_user.model_dump()
 
             likes_response.append(like_response)
-
 
         return likes_response
 

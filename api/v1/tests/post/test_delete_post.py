@@ -26,10 +26,7 @@ def test_delete_post_success(
 
 
 def test_delete_post_not_found(
-    mock_db_session: Session,
-    access_token,
-    current_user,
-    mock_delete_post_side_effect
+    mock_db_session: Session, access_token, current_user, mock_delete_post_side_effect
 ):
     response = client.delete(
         endpoint, headers={"authorization": f"Bearer {access_token}"}
