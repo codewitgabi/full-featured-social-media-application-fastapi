@@ -93,3 +93,36 @@ def mock_get_post_likes():
                 }
 
         yield post_likes
+
+
+@pytest.fixture
+def mock_repost():
+    with patch("api.v1.services.post.post_service.repost") as repost:
+
+        repost.return_value = {
+                "user_id": "zzz",
+                "post_id": "hhh",
+                "content": "Test repost",
+                "created_at": "2024-08-22T23:59:25.816336+01:00",
+                "updated_at": "2024-08-22T23:59:25.816336+01:00",
+                "repost_owner": {
+                    "id": "jjj",
+                    "image": "/picture",
+                    "username": "joshua"
+                    },
+                "original_post": {
+                    "id": "kkk",
+                    "created_at": "2024-08-22T23:59:25.816336+01:00",
+                    "updated_at": "2024-08-22T23:59:25.816336+01:00",
+                    "content": "Tgis is the original post",
+                    "video": "null",
+                    "images": "null",
+                    "original_post_owner": {
+                        "id": "iii",
+                        "image": "/picture",
+                        "username": "joseph"
+                        }
+                    }
+                }
+
+        yield repost
