@@ -74,7 +74,7 @@ async def like_post(
         message="Post updated successfully",
     )
 
-
+  
 @posts.get("/{id}/like", status_code=status.HTTP_200_OK)
 async def get_likes(
     id: str,
@@ -89,8 +89,8 @@ async def get_likes(
         message="Likes returned successfully",
         data=likes,
     )
-
-
+  
+  
 @posts.post("/{id}/repost", status_code=status.HTTP_201_CREATED)
 async def repost(
     id: str,
