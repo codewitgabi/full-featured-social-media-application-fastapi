@@ -34,7 +34,9 @@ class UserResponse(BaseModel):
     id: str
     username: str
     profile_pictures: List[ProfilePictureResponse] = Field(default=None, exclude=True)
-    current_profile_picture: Optional[ProfilePictureResponse] = None
+    current_profile_picture: Optional[ProfilePictureResponse] = Field(
+        default=None, serialization_alias="profile_picture"
+    )
 
     @root_validator(pre=True)
     def set_current_profile_picture(cls, values):

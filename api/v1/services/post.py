@@ -3,7 +3,13 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from api.v1.models.post import Post, Like
 from api.v1.models.user import User
-from api.v1.schemas.post import CreatePostSchema, UpdatePostSchema, LikeResponse
+from api.v1.schemas.post import (
+    CreatePostSchema,
+    UpdatePostSchema,
+    LikeResponse,
+    RepostResponse,
+    RepostCreate,
+)
 from api.v1.schemas.user import UserResponse
 from api.v1.services.user import user_service
 
@@ -126,6 +132,42 @@ class PostService:
             likes_response.append(like_response)
 
         return likes_response
+
+    def repost(self, db: Session, post_id: str, user: User, schema: RepostCreate):
+
+        original_post = db.query(Post).filter(Post.id == post_id).first()
+
+        if not original_post:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        # Ceeate new post
+        new_post = Post(
+            content=schema.content,
+            user_id=user.id,
+            original_post_id=post_id,
+        )
+
+        db.add(new_post)
+        db.commit()
+        db.refresh(new_post)
+
+        original_post_owner = user_service.get_user_detail(
+            db=db, user_id=original_post.user_id
+        )
+        print(original_post_owner)
+
+        new_post_owner = user_service.get_user_detail(db=db, user_id=user.id)
+        print(new_post_owner)
+
+        # Post serialization
+        original_post_response = jsonable_encoder(original_post)
+        original_post_response["user"] = jsonable_encoder(original_post_owner)
+
+        new_post_response = jsonable_encoder(new_post)
+        new_post_response["user"] = jsonable_encoder(new_post_owner)
+        new_post_response["post"] = original_post_response
+
+        return RepostResponse(**new_post_response)
 
 
 post_service = PostService()

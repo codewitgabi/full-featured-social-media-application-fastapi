@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from api.v1.models.user import User
 from api.v1.responses.success_response import success_response
-from api.v1.schemas.post import CreatePostSchema, UpdatePostSchema
+from api.v1.schemas.post import CreatePostSchema, UpdatePostSchema, RepostCreate
 from api.v1.utils.dependencies import get_db
 from api.v1.services.user import user_service
 from api.v1.services.post import post_service
@@ -74,7 +74,7 @@ async def like_post(
         message="Post updated successfully",
     )
 
-
+  
 @posts.get("/{id}/like", status_code=status.HTTP_200_OK)
 async def get_likes(
     id: str,
@@ -88,4 +88,21 @@ async def get_likes(
         status_code=status.HTTP_200_OK,
         message="Likes returned successfully",
         data=likes,
+    )
+  
+  
+@posts.post("/{id}/repost", status_code=status.HTTP_201_CREATED)
+async def repost(
+    id: str,
+    schema: RepostCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(user_service.get_current_user),
+):
+
+    repost = post_service.repost(db=db, post_id=id, schema=schema, user=user)
+
+    return success_response(
+        status_code=status.HTTP_201_CREATED,
+        message="Reposted successfully",
+        data=repost,
     )
