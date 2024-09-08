@@ -26,10 +26,12 @@ class PostResponse(CreatePostSchema):
     user_id: UUID4 = Field(exclude=True)
     created_at: datetime
     updated_at: datetime
-    user: UserResponse = Field(serialization_alias="original_post_owner")
+    user: UserResponse | None = Field(default=None, serialization_alias="original_post_owner")
+
 
 class PostResponseSchema(PostResponse):
-    original_post: PostResponse = Field(serialization_alias="original_post")
+    original_post: PostResponse | None = Field(default=None, serialization_alias="original_post")
+
 
 class LikeResponse(BaseModel):
     model_config = ConfigDict(from_attribute=True)
@@ -55,5 +57,5 @@ class RepostResponse(BaseModel):
     content: str | None = None
     created_at: datetime
     updated_at: datetime
-    user: UserResponse = Field(serialization_alias="post_owner")
-    post: PostResponse = Field(serialization_alias="original_post")
+    user: UserResponse = Field(default=None, serialization_alias="post_owner")
+    post: PostResponse = Field(default=None, serialization_alias="original_post")
