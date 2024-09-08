@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from api.v1.models.post import Post, Like
 from api.v1.models.user import User
 from api.v1.schemas.post import (
@@ -9,12 +9,37 @@ from api.v1.schemas.post import (
     LikeResponse,
     RepostResponse,
     RepostCreate,
+    PostResponse,
+    PostResponseSchema
 )
 from api.v1.schemas.user import UserResponse
 from api.v1.services.user import user_service
 
 
 class PostService:
+    def get_post(self, db: Session, user: User, post_id: str):
+        post = db.query(Post).options(
+                joinedload(Post.original_post),
+                joinedload(Post.user)
+                ).filter(Post.id == post_id).first()
+
+
+        response_post = jsonable_encoder(post)
+        return PostResponseSchema(**response_post)
+
+
+    def get_feeds(self, db: Session, user: User):
+        posts = db.query(Post).all()
+
+        posts_response = []
+        for post in posts:
+            
+            detailed_post = self.get_post(db=db, user=user, post_id=post.id)
+            posts_response.append(detailed_post)
+
+        return posts_response
+
+
     def create(self, db: Session, user: User, schema: CreatePostSchema):
         schema_dict = schema.model_dump()
 
@@ -32,6 +57,7 @@ class PostService:
 
         return jsonable_encoder(post)
 
+
     def delete(self, db: Session, user: User, post_id: str):
         # get post matching post_id and user
 
@@ -46,6 +72,7 @@ class PostService:
 
         db.delete(post)
         db.commit()
+
 
     def update(self, db: Session, user: User, post_id: str, schema: UpdatePostSchema):
         # get post from db
@@ -76,6 +103,7 @@ class PostService:
 
         return jsonable_encoder(post)
 
+
     def like_post(self, db: Session, user: User, post_id: str):
 
         # get the post
@@ -103,6 +131,7 @@ class PostService:
             like.liked = True
             db.add(like)
             db.commit()
+
 
     def get_likes(self, db: Session, post_id: str, user: User):
 
@@ -132,6 +161,7 @@ class PostService:
             likes_response.append(like_response)
 
         return likes_response
+
 
     def repost(self, db: Session, post_id: str, user: User, schema: RepostCreate):
 
