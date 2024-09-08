@@ -117,3 +117,24 @@ def mock_repost():
         }
 
         yield repost
+
+
+@pytest.fixture
+def mock_get_feeds():
+    with patch("api.v1.services.post.post_service.get_feeds") as get_feeds:
+
+        get_feeds.return_value = {
+                "id": "jjj",
+                "content":" this is a test post",
+                "image": "null",
+                "video": "null",
+                "created_at": "2024-08-22T23:59:25.816336+01:00",
+                "updated_at": "2024-08-22T23:59:25.816336+01:00",
+                "post_owner": {
+                    "id": "kkk",
+                    "profile_picture": "null",
+                    "username": "izzyjosh",
+                    },
+                "original_post": "null"
+                }
+        yield get_feeds
