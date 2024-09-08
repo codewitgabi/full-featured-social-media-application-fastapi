@@ -41,9 +41,9 @@ class Post(AbstractBaseModel):
 class Like(AbstractBaseModel):
     __tablename__ = "like"
 
-    user_id: Mapped[UUID4] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
     user = relationship("User", backref="my_likes")
-    post_id: Mapped[UUID4] = mapped_column(ForeignKey("post.id"))
+    post_id: Mapped[str] = mapped_column(ForeignKey("post.id"))
     post = relationship("Post", backref="likes")
     liked: Mapped[bool] = mapped_column(default=False)
 
