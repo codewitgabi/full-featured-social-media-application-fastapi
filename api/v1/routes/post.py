@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, WebSocket
+from fastapi import APIRouter, Depends, status, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -86,6 +86,7 @@ async def websocket_post_endpoint(websocket: WebSocket):
 
     try:
         while True:
+            await websocket.send_text("connected")
             await websocket.receive_text()
 
     except WebSocketDisconnect:

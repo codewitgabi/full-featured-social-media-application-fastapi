@@ -35,3 +35,11 @@ def test_get_feeds(
                 },
             "original_post": "null"
             }
+
+
+def test_web_socket():
+    
+    with client.websocket_connect("/api/v1/posts/ws") as websocket:
+
+        response = websocket.receive_text()
+        assert response == "connected"
