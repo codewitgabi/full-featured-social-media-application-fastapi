@@ -23,7 +23,6 @@ class PostService:
                 joinedload(Post.user)
                 ).filter(Post.id == post_id).first()
 
-
         return jsonable_encoder(post)
 
 

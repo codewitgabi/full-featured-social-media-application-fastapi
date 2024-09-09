@@ -133,6 +133,8 @@ async def repost(
 
     repost = post_service.repost(db=db, post_id=id, schema=schema, user=user)
 
+    manager.broadcast(repost)
+
     return success_response(
         status_code=status.HTTP_201_CREATED,
         message="Reposted successfully",
