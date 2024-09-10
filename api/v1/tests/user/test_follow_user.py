@@ -20,3 +20,14 @@ def test_follow_user(
 
     assert response.status_code == 200
     assert response.json()["message"] == "User followed successfully"
+
+def test_unfollow_user(
+        mock_db_session: Session,
+        current_user,
+        access_token,
+        mock_unfollow_user):
+
+    response = client.delete("/api/v1/users/jjj/unfollow", headers={"Authorization": f"Bearer {access_token}"})
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "User unfollowed successfully"
