@@ -355,24 +355,28 @@ class UserService:
         followee = db.query(User).filter(User.id == user_id).first()
         if not followee:
             raise HTTPException(
-                    status_code=404,
-                    detail="User not found",)
+                status_code=404,
+                detail="User not found",
+            )
 
         if followee not in user.followings:
             user.followings.append(followee)
 
             db.commit()
 
-
     def followers(self, db: Session, user: User):
 
-        followers = [UserResponse(**jsonable_encoder(follower)) for follower in user.followers]
+        followers = [
+            UserResponse(**jsonable_encoder(follower)) for follower in user.followers
+        ]
 
         return followers
 
     def followings(self, db: Session, user: User):
 
-        followings = [UserResponse(**jsonable_encoder(following)) for following in user.followings]
+        followings = [
+            UserResponse(**jsonable_encoder(following)) for following in user.followings
+        ]
 
         return followings
 

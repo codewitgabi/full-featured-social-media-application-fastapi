@@ -66,38 +66,45 @@ async def get_users(search: str = "", db: Session = Depends(get_db)):
 
 @users.patch("/{followee_id}/follow", summary="Follow a particular user")
 async def follow(
-        followee_id: str,
-        user: User = Depends(user_service.get_current_user),
-        db: Session = Depends(get_db),):
+    followee_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
 
     user_service.follow_user(db=db, user=user, user_id=followee_id)
     return success_response(
-            status_code=200,
-            message="User followed successfully",)
+        status_code=200,
+        message="User followed successfully",
+    )
+
 
 @users.get("/{user_id}/followers", summary="List of folllowers")
 async def followers(
-        user_id:str,
-        user: User = Depends(user_service.get_current_user),
-        db: Session = Depends(get_db),):
+    user_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
 
     followers = user_service.followers(db=db, user=user)
 
     return success_response(
-            status_code=200,
-            message="Followers successfully returned",
-            data=followers)
+        status_code=200, message="Followers successfully returned", data=followers
+    )
 
 
-@users.get("/{user_id}/followings", summary="List of user the current user is following")
+@users.get(
+    "/{user_id}/followings", summary="List of user the current user is following"
+)
 async def followings(
-        user_id: str,
-        user: User = Depends(user_service.get_current_user),
-        db: Session = Depends(get_db),):
+    user_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
 
     followings = user_service.followings(db=db, user=user)
 
     return success_response(
-            status_code=200,
-            message="Followings list successfully returned",
-            data=followings)
+        status_code=200,
+        message="Followings list successfully returned",
+        data=followings,
+    )
