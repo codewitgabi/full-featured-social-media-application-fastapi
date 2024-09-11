@@ -362,6 +362,11 @@ class UserService:
         if followee not in user.followings:
             user.followings.append(followee)
 
+            notification = Notification(
+                user_id=followee.id, message=f"{user.username} followed you"
+            )
+
+            db.add(notification)
             db.commit()
 
     def unfollow_user(self, db: Session, user_id: str, user: User):
@@ -376,6 +381,12 @@ class UserService:
             )
 
         user.followings.remove(user_to_unfollow)
+
+        notification = Notification(
+            user_id=user_to_unfollow.id, message=f"{user.username} unfollowed you"
+        )
+
+        db.add(notification)
         db.commit()
 
     def followers(self, db: Session, user: User):
