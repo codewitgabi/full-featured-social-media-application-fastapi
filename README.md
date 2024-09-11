@@ -33,13 +33,13 @@ This project models and schema strickly follows what is on the [database design 
 
   - [x] Create, edit, and delete posts (text, images, videos).
   - [ ] Like, comment, and share functionality.
-  - [ ] Real-time feed updates using WebSocket
+  - [x] Real-time feed updates using WebSocket
 
 - **Followers and Following**:
 
-  - [ ] Follow/unfollow users.
-  - [ ] Notifications for follows and follow-backs.
-  - [ ] Display follower and following lists.
+  - [x] Follow/unfollow users.
+  - [x] Notifications for follows and follow-backs.
+  - [x] Display follower and following lists.
 
 - **Notifications**:
 
