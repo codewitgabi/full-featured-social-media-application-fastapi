@@ -350,5 +350,33 @@ class UserService:
 
         return jsonable_encoder(users, exclude={"password"})
 
+    def follow_user(self, db: Session, user_id: str, user: User):
+
+        followee = db.query(User).filter(User.id == user_id).first()
+        if not followee:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found",
+            )
+
+        if followee not in user.followings:
+            user.followings.append(followee)
+
+            db.commit()
+
+    def unfollow_user(self, db: Session, user_id: str, user: User):
+        user_to_unfollow = db.query(User).filter(User.id == user_id).first()
+
+        if not user_to_unfollow:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        if user_to_unfollow not in user.followings:
+            raise HTTPException(
+                status_code=404, detail="You are not following this user"
+            )
+
+        user.followings.remove(user_to_unfollow)
+        db.commit()
+
 
 user_service = UserService()

@@ -75,3 +75,16 @@ def mock_get_users():
         ]
 
         yield fetch_users
+
+
+@pytest.fixture
+def mock_follow_user():
+
+    with patch("api.v1.services.user.user_service.follow_user") as follow_user:
+        yield follow_user
+
+
+@pytest.fixture
+def mock_unfollow_user():
+    with patch("api.v1.services.user.user_service.unfollow_user") as unfollow_user:
+        yield unfollow_user

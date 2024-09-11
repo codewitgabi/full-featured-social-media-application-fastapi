@@ -62,3 +62,32 @@ async def get_users(search: str = "", db: Session = Depends(get_db)):
         message="User list fetched successfully",
         data=users,
     )
+
+
+@users.patch("/{followee_id}/follow", summary="Follow a particular user")
+async def follow(
+    followee_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    user_service.follow_user(db=db, user=user, user_id=followee_id)
+    return success_response(
+        status_code=200,
+        message="User followed successfully",
+    )
+
+
+@users.delete("/{followee_id}/unfollow", summary="Unfollow the user with the id")
+async def unfollow(
+    followee_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    user_service.unfollow_user(db=db, user_id=followee_id, user=user)
+
+    return success_response(
+        status_code=200,
+        message="User unfollowed successfully",
+    )
