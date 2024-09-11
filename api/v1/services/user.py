@@ -19,7 +19,7 @@ from sqlalchemy import or_, text
 from passlib.context import CryptContext
 import jwt
 from api.v1.models.user import User
-from api.v1.schemas.user import UserCreate, UserUpdateSchema
+from api.v1.schemas.user import UserCreate, UserUpdateSchema, UserResponse
 from api.v1.utils.storage import upload
 from api.v1.models.notification import Notification
 
@@ -377,6 +377,22 @@ class UserService:
 
         user.followings.remove(user_to_unfollow)
         db.commit()
+
+    def followers(self, db: Session, user: User):
+
+        followers = [
+            UserResponse(**jsonable_encoder(follower)) for follower in user.followers
+        ]
+
+        return followers
+
+    def followings(self, db: Session, user: User):
+
+        followings = [
+            UserResponse(**jsonable_encoder(following)) for following in user.followings
+        ]
+
+        return followings
 
 
 user_service = UserService()

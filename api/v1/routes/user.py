@@ -91,3 +91,35 @@ async def unfollow(
         status_code=200,
         message="User unfollowed successfully",
     )
+
+
+@users.get("/{user_id}/followers", summary="List of folllowers")
+async def followers(
+    user_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    followers = user_service.followers(db=db, user=user)
+
+    return success_response(
+        status_code=200, message="Followers successfully returned", data=followers
+    )
+
+
+@users.get(
+    "/{user_id}/followings", summary="List of user the current user is following"
+)
+async def followings(
+    user_id: str,
+    user: User = Depends(user_service.get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    followings = user_service.followings(db=db, user=user)
+
+    return success_response(
+        status_code=200,
+        message="Followings list successfully returned",
+        data=followings,
+    )

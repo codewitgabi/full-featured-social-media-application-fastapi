@@ -88,3 +88,25 @@ def mock_follow_user():
 def mock_unfollow_user():
     with patch("api.v1.services.user.user_service.unfollow_user") as unfollow_user:
         yield unfollow_user
+
+
+@pytest.fixture
+def mock_followers():
+
+    with patch("api.v1.services.user.user_service.followers") as followers:
+        followers.return_value = [
+            {"id": "hhh", "username": "joshua", "profile_picture": "hhh"},
+            {"id": "jjj", "username": "joseph", "profile_picture": "jjj"},
+        ]
+        yield followers
+
+
+@pytest.fixture
+def mock_followings():
+    with patch("api.v1.services.user.user_service.followings") as followings:
+
+        followings.return_value = [
+            {"id": "hhh", "username": "joshua", "profile_picture": "hhh"},
+            {"id": "jjj", "username": "joseph", "profile_picture": "jjj"},
+        ]
+        yield followings
