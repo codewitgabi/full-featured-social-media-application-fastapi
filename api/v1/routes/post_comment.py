@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from api.v1.schemas.post_comment import CreateCommentSchema, CommentResponse
 from api.v1.schemas.user import UserResponse
@@ -34,12 +34,13 @@ async def get_comments(
 async def create_comment(
     post_id: str,
     comment: CreateCommentSchema,
+    background_task: BackgroundTasks = BackgroumdTasks(),
     db: Session = Depends(get_db),
     user: User = Depends(user_service.get_current_user),
 ):
 
     new_comment: CommentResponse = comment_service.create(
-        db=db, user=user, post_id=post_id, schema=comment
+        db=db, user=user, post_id=post_id, schema=comment, background_task=background_task
     )
 
     return success_response(
