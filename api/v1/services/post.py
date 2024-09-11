@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from api.v1.models.post import Post, Like
 from api.v1.models.user import User
 from api.v1.schemas.post import (
@@ -9,12 +9,36 @@ from api.v1.schemas.post import (
     LikeResponse,
     RepostResponse,
     RepostCreate,
+    PostResponse,
+    PostResponseSchema
 )
 from api.v1.schemas.user import UserResponse
 from api.v1.services.user import user_service
 
 
 class PostService:
+    def get_post(self, db: Session, user: User, post_id: str):
+        post = db.query(Post).options(
+                joinedload(Post.original_post),
+                joinedload(Post.user)
+                ).filter(Post.id == post_id).first()
+
+        return jsonable_encoder(post)
+
+
+    def get_feeds(self, db: Session, user: User):
+        posts = db.query(Post).all()
+
+        posts_response = []
+        for post in posts:
+            
+            detailed_post = self.get_post(db=db, user=user, post_id=post.id)
+            validated_post_response = PostResponseSchema(**detailed_post)
+            posts_response.append(validated_post_response)
+
+        return posts_response
+
+
     def create(self, db: Session, user: User, schema: CreatePostSchema):
         schema_dict = schema.model_dump()
 
@@ -32,6 +56,7 @@ class PostService:
 
         return jsonable_encoder(post)
 
+
     def delete(self, db: Session, user: User, post_id: str):
         # get post matching post_id and user
 
@@ -46,6 +71,7 @@ class PostService:
 
         db.delete(post)
         db.commit()
+
 
     def update(self, db: Session, user: User, post_id: str, schema: UpdatePostSchema):
         # get post from db
@@ -76,6 +102,7 @@ class PostService:
 
         return jsonable_encoder(post)
 
+
     def like_post(self, db: Session, user: User, post_id: str):
 
         # get the post
@@ -103,6 +130,7 @@ class PostService:
             like.liked = True
             db.add(like)
             db.commit()
+
 
     def get_likes(self, db: Session, post_id: str, user: User):
 
@@ -133,9 +161,10 @@ class PostService:
 
         return likes_response
 
+
     def repost(self, db: Session, post_id: str, user: User, schema: RepostCreate):
 
-        original_post = db.query(Post).filter(Post.id == post_id).first()
+        original_post = self.get_post(db=db, user=user, post_id=post_id)
 
         if not original_post:
             raise HTTPException(status_code=404, detail="Post not found")
@@ -151,17 +180,10 @@ class PostService:
         db.commit()
         db.refresh(new_post)
 
-        original_post_owner = user_service.get_user_detail(
-            db=db, user_id=original_post.user_id
-        )
-        print(original_post_owner)
-
         new_post_owner = user_service.get_user_detail(db=db, user_id=user.id)
-        print(new_post_owner)
 
         # Post serialization
         original_post_response = jsonable_encoder(original_post)
-        original_post_response["user"] = jsonable_encoder(original_post_owner)
 
         new_post_response = jsonable_encoder(new_post)
         new_post_response["user"] = jsonable_encoder(new_post_owner)
