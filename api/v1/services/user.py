@@ -362,7 +362,7 @@ class UserService:
         if followee not in user.followings:
             user.followings.append(followee)
 
-            notification2 = Notification(
+            notification = Notification(
                 user_id=followee.id, message=f"{user.username} followed you"
             )
 
