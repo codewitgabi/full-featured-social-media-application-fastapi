@@ -34,7 +34,7 @@ async def get_comments(
 async def create_comment(
     post_id: str,
     comment: CreateCommentSchema,
-    background_task: BackgroundTasks = BackgroumdTasks(),
+    background_task: BackgroundTasks = BackgroundTasks(),
     db: Session = Depends(get_db),
     user: User = Depends(user_service.get_current_user),
 ):

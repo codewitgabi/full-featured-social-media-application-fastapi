@@ -126,6 +126,15 @@ class PostService:
         if like:
             db.delete(like)
             db.commit()
+
+            # notification for unliking a post
+            notification = Notification(user_id=post.user_id, message=f"{user.username} recently unliked your post")
+
+            db.add(notification)
+            db.commit()
+
+            background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
+
         else:
             like = Like(user_id=user.id, post_id=post_id)
             like.liked = True

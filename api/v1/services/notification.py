@@ -7,15 +7,16 @@ from api.v1.models.notification import Notification
 
 
 class NotificationService:
+    def __init__(self):
 
-    user_event_queues: Dict[str, asyncio.Queue] = {}
+        self.user_event_queues: Dict[str, asyncio.Queue] = {}
 
-    async def event_generator(user_id: str):
-        if user_id not in user_event_queues:
-            user_event_queues[user_id] = asyncio.Queue()
+    async def event_generator(self, user_id: str):
+        if user_id not in self.user_event_queues:
+            self.user_event_queues[user_id] = asyncio.Queue()
         
         while True:
-            event = await user_event_queues[user_id].get()
+            event = await self.user_event_queues[user_id].get()
             yield f"data: {event}"
 
 
