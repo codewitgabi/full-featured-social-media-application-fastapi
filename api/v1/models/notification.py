@@ -17,7 +17,7 @@ class Notification(AbstractBaseModel):
     status: Mapped[str] = mapped_column(
         SQLAlchemyEnum(NotificationStatus), server_default="unread"
     )
-    
+
     user = relationship("User", back_populates="notifications")
 
     def __str__(self):
