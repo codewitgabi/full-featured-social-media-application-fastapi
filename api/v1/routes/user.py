@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, status, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from api.v1.models.user import User
@@ -67,11 +67,13 @@ async def get_users(search: str = "", db: Session = Depends(get_db)):
 @users.patch("/{followee_id}/follow", summary="Follow a particular user")
 async def follow(
     followee_id: str,
+    background_task: BackgroundTasks = BackgroundTasks(),
     user: User = Depends(user_service.get_current_user),
     db: Session = Depends(get_db),
 ):
 
-    user_service.follow_user(db=db, user=user, user_id=followee_id)
+    user_service.follow_user(db=db, user=user, user_id=followee_id, background_task=background_task)
+
     return success_response(
         status_code=200,
         message="User followed successfully",
@@ -81,11 +83,12 @@ async def follow(
 @users.delete("/{followee_id}/unfollow", summary="Unfollow the user with the id")
 async def unfollow(
     followee_id: str,
+    background_task: BackgroundTasks = BackgroundTasks(),
     user: User = Depends(user_service.get_current_user),
     db: Session = Depends(get_db),
 ):
 
-    user_service.unfollow_user(db=db, user_id=followee_id, user=user)
+    user_service.unfollow_user(db=db, user_id=followee_id, user=user, background_task=background_task)
 
     return success_response(
         status_code=200,

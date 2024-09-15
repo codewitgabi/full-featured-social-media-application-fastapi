@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session, joinedload
 from api.v1.models.post import Post, Like
@@ -14,7 +14,8 @@ from api.v1.schemas.post import (
 )
 from api.v1.schemas.user import UserResponse
 from api.v1.services.user import user_service
-
+from api.v1.models.notification import Notification
+from api.v1.services.notification import notification_service
 
 class PostService:
     def get_post(self, db: Session, user: User, post_id: str):
@@ -103,11 +104,11 @@ class PostService:
         return jsonable_encoder(post)
 
 
-    def like_post(self, db: Session, user: User, post_id: str):
+    def like_post(self, db: Session, user: User, post_id: str, background_task: BackgroundTasks):
 
         # get the post
         post = (
-            db.query(Post).filter(Post.id == post_id, Post.user_id == user.id).first()
+            db.query(Post).filter(Post.id == post_id).first()
         )
 
         if not post:
@@ -125,11 +126,31 @@ class PostService:
         if like:
             db.delete(like)
             db.commit()
+
+            # notification for unliking a post
+            notification = Notification(user_id=post.user_id, message=f"{user.username} recently unliked your post")
+
+            db.add(notification)
+            db.commit()
+
+            background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
+
         else:
             like = Like(user_id=user.id, post_id=post_id)
             like.liked = True
             db.add(like)
             db.commit()
+
+            # add notification for like
+
+            notification = Notification(user_id=post.user_id, message=f"{user.username} recently liked your post")
+
+            db.add(notification)
+            db.commit()
+
+            # background task for sse notification
+
+            background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
 
 
     def get_likes(self, db: Session, post_id: str, user: User):
@@ -162,7 +183,7 @@ class PostService:
         return likes_response
 
 
-    def repost(self, db: Session, post_id: str, user: User, schema: RepostCreate):
+    def repost(self, db: Session, post_id: str, user: User, schema: RepostCreate, background_task: BackgroundTasks):
 
         original_post = self.get_post(db=db, user=user, post_id=post_id)
 
@@ -188,6 +209,14 @@ class PostService:
         new_post_response = jsonable_encoder(new_post)
         new_post_response["user"] = jsonable_encoder(new_post_owner)
         new_post_response["post"] = original_post_response
+
+        # repost notification
+        notification = Notification(user_id=original_post.user_id,essage=f"{user.username} shared your post")
+        db.add(notification)
+        db.commit()
+
+        # background task for notificatiom
+        background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
 
         return RepostResponse(**new_post_response)
 

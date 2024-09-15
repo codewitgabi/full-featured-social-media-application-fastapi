@@ -12,7 +12,7 @@ from api.v1.models.social_link import SocialLink
 from api.v1.utils.dependencies import get_db
 
 load_dotenv()
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_, text
@@ -22,6 +22,7 @@ from api.v1.models.user import User
 from api.v1.schemas.user import UserCreate, UserUpdateSchema, UserResponse
 from api.v1.utils.storage import upload
 from api.v1.models.notification import Notification
+from api.v1.services.notification import notification_service
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -350,7 +351,7 @@ class UserService:
 
         return jsonable_encoder(users, exclude={"password"})
 
-    def follow_user(self, db: Session, user_id: str, user: User):
+    def follow_user(self, db: Session, user_id: str, user: User, background_task: BackgroundTasks):
 
         followee = db.query(User).filter(User.id == user_id).first()
         if not followee:
@@ -369,7 +370,9 @@ class UserService:
             db.add(notification)
             db.commit()
 
-    def unfollow_user(self, db: Session, user_id: str, user: User):
+            background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
+
+    def unfollow_user(self, db: Session, user_id: str, user: User, background_task: BackgroundTasks):
         user_to_unfollow = db.query(User).filter(User.id == user_id).first()
 
         if not user_to_unfollow:
@@ -388,6 +391,9 @@ class UserService:
 
         db.add(notification)
         db.commit()
+
+        background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
+
 
     def followers(self, db: Session, user: User):
 
