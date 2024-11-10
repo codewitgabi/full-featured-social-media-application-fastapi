@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, status, WebSocket, WebSocketDisconnect, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -96,15 +96,16 @@ async def websocket_post_endpoint(websocket: WebSocket):
 @posts.patch("/{id}/like", status_code=status.HTTP_200_OK)
 async def like_post(
     id: str,
+    background_task: BackgroundTasks = BackgroundTasks(),
     db: Session = Depends(get_db),
     user: User = Depends(user_service.get_current_user),
 ):
 
-    liked_post = post_service.like_post(db=db, user=user, post_id=id)
+    liked_post = post_service.like_post(db=db, user=user, post_id=id, background_task=background_task)
 
     return success_response(
         status_code=status.HTTP_200_OK,
-        message="Post updated successfully",
+        message="Post liked successfully",
     )
 
   
@@ -128,11 +129,12 @@ async def get_likes(
 async def repost(
     id: str,
     schema: RepostCreate,
+    background_task: BackgroundTasks = BackgroundTasks(),
     db: Session = Depends(get_db),
     user: User = Depends(user_service.get_current_user),
 ):
 
-    repost = post_service.repost(db=db, post_id=id, schema=schema, user=user)
+    repost = post_service.repost(db=db, post_id=id, schema=schema, user=user, background_task=background_task)
 
     manager.broadcast(repost)
 

@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from api.v1.schemas.post_comment import (
@@ -10,7 +10,9 @@ from api.v1.schemas.user import UserResponse
 from api.v1.models.post_comment import PostComment
 from api.v1.models.post import Post
 from api.v1.models.user import User
+from api.v1.models.notification import Notification
 from api.v1.services.user import user_service
+from api.v1.services.notification import notification_service
 
 
 class CommentService:
@@ -27,7 +29,7 @@ class CommentService:
 
     # class methods
     def create(
-        self, db: Session, user: User, post_id: str, schema: CreateCommentSchema
+            self, db: Session, user: User, post_id: str, schema: CreateCommentSchema, background_task: BackgroundTasks
     ):
         schema_dict = schema.model_dump()
 
@@ -39,7 +41,7 @@ class CommentService:
 
         # get the post
         post = (
-            db.query(Post).filter(Post.user_id == user.id, Post.id == post_id).first()
+            db.query(Post).filter(Post.id == post_id).first()
         )
 
         if not post:
@@ -57,6 +59,16 @@ class CommentService:
 
         encoded = jsonable_encoder(comment)
         encoded["user"] = response_user
+
+        # Comment Notification
+        notification = Notification(user_id=post.user_id, message=f"{user.username} commented on your post")
+
+        db.add(notification)
+        db.commit()
+
+        # add background task to send notifcation
+        background_task.add_task(notification_service.user_event_queues[notification.user_id].put, notification.message)
+
 
         return CommentResponse(**encoded)
 
